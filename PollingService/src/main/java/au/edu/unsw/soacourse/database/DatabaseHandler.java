@@ -52,7 +52,7 @@ public class DatabaseHandler {
 		try {
 			c = DriverManager.getConnection(URL);
 		} catch (SQLException e) {
-			System.out.println(e.getMessage() + "\nFUCK");
+			System.out.println(e.getMessage());
 		}
 		return c;
 	}
