@@ -8,11 +8,11 @@ package au.edu.unsw.soacourse.model;
 public class PollModel {
 	private int _pId;
 	private String title;
+	private String description;
 	private String type;
 	private String options;
 	private String comments;
-	private String final_choice;
-	
+	private String finalChoice;
 	
 	public int get_pId() {
 		return _pId;
@@ -29,8 +29,14 @@ public class PollModel {
 	public String getComments() {
 		return comments;
 	}
-	public String getFinal_choice() {
-		return final_choice;
+	public String getFinalChoice() {
+		return finalChoice;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public void set_pId(int _pId) {
 		this._pId = _pId;
@@ -47,8 +53,8 @@ public class PollModel {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	public void setFinal_choice(String final_choice) {
-		this.final_choice = final_choice;
+	public void setFinalChoice(String final_choice) {
+		this.finalChoice = final_choice;
 	}
 	
 }
