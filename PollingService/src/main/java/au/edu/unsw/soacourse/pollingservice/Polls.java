@@ -10,6 +10,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+/**
+ * Service operations on polls
+ * @author trungisme
+ *
+ */
 @Path("/polls")
 public class Polls {
 	

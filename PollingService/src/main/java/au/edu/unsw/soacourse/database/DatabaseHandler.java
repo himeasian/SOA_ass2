@@ -5,6 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Database handler for polling service
+ * @author trungisme
+ *
+ */
 public class DatabaseHandler {
 	
 	public static final String URL = "jdbc:sqlite:poll.db";
