@@ -49,16 +49,24 @@ public class DatabaseHandler {
 	 * Creates the databases relevant to Job Service
 	 */
 	public static void createDb() {	
-        try (Connection conn = DriverManager.getConnection(URL)) {
-            if (conn != null) {
+        try (Connection conn = connect()) {
                 Statement stmt = conn.createStatement();
                 stmt.executeQuery(CREATE_JOB_POSTINGS_TABLE);
                 stmt.executeQuery(CREATE_APPLICATIONS_TABLE);
                 stmt.executeQuery(CREATE_REVIEWS_TABLE);
-            }
- 
         } catch (SQLException e) {
 			System.err.println(e.getMessage());
         }
     }
+	
+	private static Connection connect(){
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(URL);
+		}
+		catch(SQLException e){
+			System.out.println(e.getMessage());
+		}
+		return conn;
+	}
 }
