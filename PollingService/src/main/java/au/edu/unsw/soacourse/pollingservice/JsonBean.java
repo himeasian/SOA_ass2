@@ -1,6 +1,10 @@
 package au.edu.unsw.soacourse.pollingservice;
 
-
+/**
+ * 
+ * @author trungislame
+ *
+ */
 public class JsonBean {
     private String val1;
     private String val2;
