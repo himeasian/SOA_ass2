@@ -8,6 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import au.edu.unsw.soacourse.model.*;
 
 public class DatabaseHandler {
@@ -23,9 +26,9 @@ public class DatabaseHandler {
 			+ "SalaryRate real,"
 			+ "PositionType text,"
 			+ "Location text,"
-			+ "JobDescription,"
-			+ "Status,"
-			+ "Classification"
+			+ "JobDescription text,"
+			+ "Status text,"
+			+ "Classification text"
 			+ ");";
 	
 	private static final String CREATE_APPLICATIONS_TABLE = "CREATE TABLE IF NOT EXISTS" + APPLICATIONS_TABLE + " ("
@@ -78,11 +81,33 @@ public class DatabaseHandler {
 		}
 		return conn;
 	}
-
-	public int createJobPosting(JobPosting jp){
-		//int result=0;
+	
+	/**
+	 * Using a result set from a sql query, a JobPosting is returned based on the JobID
+	 * @param rs
+	 * @return A JobPosting model
+	 * @throws SQLException
+	 */
+	private JobPosting generateJobPosting(ResultSet rs) throws SQLException{
+		JobPosting jp = new JobPosting();
+		jp.set_jobID(rs.getInt("_JobID"));
+		jp.setCompanyName(rs.getString("CompanyName"));
+		jp.setSalaryRate(rs.getString("SalaryRate"));
+		jp.setPositionType(rs.getString("PositionType"));
+		jp.setLocation(rs.getString("Location"));
+		jp.setJobDescription(rs.getString("JobDescription"));
+		jp.setStatus(rs.getString("Status"));
+		jp.setClassification(rs.getString("Status"));
 		
-		// Check to see if the JobPosting already exists in the JobPosting Table
+		return jp;
+	}
+	
+	/**
+	 * Check if job posting exists in Jobs based on JobPosting passed
+	 * @param jp
+	 * @return _JobID
+	 */
+	private int checkJobPostingExists(JobPosting jp){
 		try(Connection conn = connect()){
 			String stmtstrcheck = "SELECT _JobID FROM Jobs WHERE CompanyName = ? "
 					+ "AND SalaryRate = ? "
@@ -106,6 +131,28 @@ public class DatabaseHandler {
 				return rs.getInt(1);
 			}
 			else{
+				return -2;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+	public int createJobPosting(JobPosting jp){
+		//int result=0;
+		
+		// Check to see if the JobPosting already exists in the JobPosting Table
+		try(Connection conn = connect()){
+			
+			int checkid = checkJobPostingExists(jp);
+			
+			if(checkid>0){
+				return checkid; 
+			}
+			else{
 				String stmtstrinsert = "INSERT INTO Jobs (?,?,?,?,?,?,?)";
 				PreparedStatement stmtinsert = conn.prepareStatement(stmtstrinsert);
 				stmtinsert.setString(1, jp.getCompanyName());
@@ -117,14 +164,84 @@ public class DatabaseHandler {
 				stmtinsert.setString(7, jp.getClassification());
 				stmtinsert.executeUpdate();	
 				
-				ResultSet rscheck = stmtcheck.executeQuery();
-				rscheck.next();
-				return rscheck.getInt(1);
+				//ResultSet rscheck = stmtcheck.executeQuery();
+				//rscheck.next();
+				return checkJobPostingExists(jp);
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return -1;
-			//e.printStackTrace();
+			
 		}
 		
+	}
+
+	public JobPosting getJobPosting(int _JobID){
+		JobPosting jp = new JobPosting();
+		
+		try(Connection conn = connect()){
+			String query = "SELECT * FROM Jobs WHERE _JobID = ?";
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, _JobID);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			jp = generateJobPosting(rs);
+			return jp;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Gets all the JobPostings from the Jobs table and stores them in an arraylist.
+	 * @return List<JobPosting>
+	 */
+	public List<JobPosting> getJobPostings(){
+		List<JobPosting> jplist = new ArrayList<JobPosting>();
+		
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Jobs";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlquery);
+			while(rs.next()){
+				jplist.add(generateJobPosting(rs));
+			}
+			
+			return jplist;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	// NEED TO MODIFY TO HANDLE THAT IF STATUS IS SAY "IN-REVIEW" then it can't be updated to "OPEN"
+	public boolean updateJobPosting(JobPosting jp){
+		boolean flag = false;
+		int JobID = jp.get_jobID();
+		try(Connection conn = connect()){
+			// Need to check if JobPosting exists first.
+			String sqlquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+			PreparedStatement stmtcheck = conn.prepareStatement(sqlquery);
+			stmtcheck.setInt(1, JobID);
+			ResultSet rs = stmtcheck.executeQuery();
+			
+			if(rs.next()){
+				String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
+				PreparedStatement stmt = conn.prepareStatement(updatequery);
+				stmt.setString(1, jp.getCompanyName());
+				stmt.setString(2, jp.getSalaryRate());
+				stmt.setString(3, jp.getPositionType());
+				stmt.setString(4, jp.getLocation());
+				stmt.setString(5, jp.getJobDescription());
+				stmt.setString(6, jp.getStatus());
+				stmt.setString(7, jp.getClassification());
+				stmt.executeUpdate();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return flag;
 	}
 }

@@ -10,11 +10,12 @@ public class JobPosting {
 	private String JobDescription;
 	private String Status;
 	private String Classification;
-	
 	public int get_jobID() {
 		return _jobID;
 	}
-	
+	public void set_jobID(int _jobID) {
+		this._jobID = _jobID;
+	}
 	public String getCompanyName() {
 		return CompanyName;
 	}
@@ -57,6 +58,8 @@ public class JobPosting {
 	public void setClassification(String classification) {
 		Classification = classification;
 	}
+	
+	
 	
 	
 }
