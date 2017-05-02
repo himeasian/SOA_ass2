@@ -4,8 +4,11 @@ package au.edu.unsw.soacourse.database;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import au.edu.unsw.soacourse.model.*;
 
 public class DatabaseHandler {
 	
@@ -46,9 +49,15 @@ public class DatabaseHandler {
 			+ ");";
 	
 	/**
+	 * Creates a database upon loading of class.
+	 */
+	public DatabaseHandler(){
+		createDb();
+	}
+	/**
 	 * Creates the databases relevant to Job Service
 	 */
-	public static void createDb() {	
+	private void createDb() {	
         try (Connection conn = connect()) {
                 Statement stmt = conn.createStatement();
                 stmt.executeQuery(CREATE_JOB_POSTINGS_TABLE);
@@ -59,7 +68,7 @@ public class DatabaseHandler {
         }
     }
 	
-	private static Connection connect(){
+	private Connection connect(){
 		Connection conn = null;
 		try{
 			conn = DriverManager.getConnection(URL);
@@ -68,5 +77,54 @@ public class DatabaseHandler {
 			System.out.println(e.getMessage());
 		}
 		return conn;
+	}
+
+	public int createJobPosting(JobPosting jp){
+		//int result=0;
+		
+		// Check to see if the JobPosting already exists in the JobPosting Table
+		try(Connection conn = connect()){
+			String stmtstrcheck = "SELECT _JobID FROM Jobs WHERE CompanyName = ? "
+					+ "AND SalaryRate = ? "
+					+ "AND PositionType = ?"
+					+ "AND Location = ? "
+					+ "AND JobDescription = ? "
+					+ "AND Status = ? "
+					+ "AND Classification = ?";
+			PreparedStatement stmtcheck = conn.prepareStatement(stmtstrcheck);
+			stmtcheck.setString(1, jp.getCompanyName());
+			stmtcheck.setString(2, jp.getSalaryRate());
+			stmtcheck.setString(3, jp.getPositionType());
+			stmtcheck.setString(4, jp.getLocation());
+			stmtcheck.setString(5, jp.getJobDescription());
+			stmtcheck.setString(6, jp.getStatus());
+			stmtcheck.setString(7, jp.getClassification());
+			
+			ResultSet rs =stmtcheck.executeQuery();
+			
+			if(rs.next()){
+				return rs.getInt(1);
+			}
+			else{
+				String stmtstrinsert = "INSERT INTO Jobs (?,?,?,?,?,?,?)";
+				PreparedStatement stmtinsert = conn.prepareStatement(stmtstrinsert);
+				stmtinsert.setString(1, jp.getCompanyName());
+				stmtinsert.setString(2, jp.getSalaryRate());
+				stmtinsert.setString(3, jp.getPositionType());
+				stmtinsert.setString(4, jp.getLocation());
+				stmtinsert.setString(5, jp.getJobDescription());
+				stmtinsert.setString(6, jp.getStatus());
+				stmtinsert.setString(7, jp.getClassification());
+				stmtinsert.executeUpdate();	
+				
+				ResultSet rscheck = stmtcheck.executeQuery();
+				rscheck.next();
+				return rscheck.getInt(1);
+			}
+		} catch (SQLException e) {
+			return -1;
+			//e.printStackTrace();
+		}
+		
 	}
 }
