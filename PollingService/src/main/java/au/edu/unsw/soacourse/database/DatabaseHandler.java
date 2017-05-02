@@ -29,30 +29,29 @@ public class DatabaseHandler {
 	public int createPoll(PollModel p) {
 		
 		try (Connection c = connect()) {
-			// check if exists first
-			String sel = "select _pId from polls where " +
-						"title = ? and " +
-						"description = ? and " +
-						"type = ? and " +
-						"options = ? and " +
-						"comments = ? and " +
-						"final_choice = ?";
-			
-			PreparedStatement pstmt = c.prepareStatement(sel);
-			pstmt.setString(1, p.getTitle());
-			pstmt.setString(2, p.getDescription());
-			pstmt.setString(3, p.getType());
-			pstmt.setString(4, p.getOptions());
-			pstmt.setString(5, p.getComments());
-			pstmt.setString(6, p.getFinalChoice());
-			ResultSet rs = pstmt.executeQuery();
-			
-			// if exists, return the id 
-			if (rs.next()) {
-				return rs.getInt(1);
-			}
-			
-			// insert
+//			// check if exists first
+//			String sel = "select _pId from polls where " +
+//						"title = ? and " +
+//						"description = ? and " +
+//						"type = ? and " +
+//						"options = ? and " +
+//						"comments = ? and " +
+//						"final_choice = ?";
+//			
+//			PreparedStatement pstmt = c.prepareStatement(sel);
+//			pstmt.setString(1, p.getTitle());
+//			pstmt.setString(2, p.getDescription());
+//			pstmt.setString(3, p.getType());
+//			pstmt.setString(4, p.getOptions());
+//			pstmt.setString(5, p.getComments());
+//			pstmt.setString(6, p.getFinalChoice());
+//			ResultSet rs = pstmt.executeQuery();
+//			
+//			// if exists, return the id 
+//			if (rs.next()) {
+//				return rs.getInt(1);
+//			}
+
 			String ins = "insert into polls(title, "
 					+ "description, type, options, "
 					+ "comments, final_choice) values(?,?,?,?,?,?)";
@@ -66,9 +65,7 @@ public class DatabaseHandler {
 			istmt.executeUpdate();
 			
 			// get id
-			rs = pstmt.executeQuery();
-			rs.next();
-			return rs.getInt(1);
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
 			
 			
 		} catch (SQLException e) {
@@ -78,14 +75,18 @@ public class DatabaseHandler {
 	}
 	
 	/**
-	 * Get all polls
+	 * Get polls that match clause, if no clause return all polls
 	 * @return
 	 */
-	public List<PollModel> getPolls() {
+	public List<PollModel> getPolls(String clause) {
 		
 		try (Connection c = connect()) {
 			Statement stmt = c.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from polls");
+			
+			String sql = "select * from polls";
+			if (!clause.isEmpty()) 
+				sql += " where " + clause;
+			ResultSet rs = stmt.executeQuery(sql);
 			
 			List<PollModel> p = new ArrayList<PollModel>();
 			while(rs.next()) {
