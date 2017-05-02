@@ -33,17 +33,17 @@ public class Polls {
     @Consumes("application/json")
     @Path("/")
     public Response createPolls(PollModel input) throws URISyntaxException {
-        /* TODO insert into database if doesn't exist CHECK THIS*/
+        /* TODO Modify to add HATEOAS additional links */
 		int r = new DatabaseHandler().createPoll(input);
 		input.set_pId(r);
         return Response.created(new URI("/polls/" + r)).entity(input).build();
     }
 	
 	@GET
-    @Path("/{input}")
+    @Path("/{pid}")
     @Produces("application/json")
-    public Response getPoll(@PathParam("input") int pid) {
-		/* TODO get specific entry from polls table */
+    public Response getPoll(@PathParam("pid") int pid) {
+		/* TODO Modify to add HATEOAS additional links i.e. related votes*/
         return Response.ok().entity(new DatabaseHandler().getPoll(pid)).build();
     }
 	
@@ -57,7 +57,7 @@ public class Polls {
 							@QueryParam("options") String options,
 							@QueryParam("comments") String comments,
 							@QueryParam("finalChoice") String finalChoice) {
-		/* TODO search for specific item */
+		/* TODO Modify to add HATEOAS additional links i.e. related votes*/
 		List<String> str = new ArrayList<String>();
 		
 		if (pid != null)
@@ -79,27 +79,25 @@ public class Polls {
 		for (int i = 0; i < str.size(); i++) {
 			query += (i == 0) ? str.get(i) : " AND " + str.get(i);
 		}
-		
-		System.out.println("query is " + query);
-		
         return Response.ok().entity(new DatabaseHandler().getPolls(query)).build();
     }
 	
 	@PUT
     @Produces("application/json")
     @Consumes("application/json")
-    @Path("/{_pId}")
-    public Response updatePolls(PollModel input, @PathParam("_pId") String _pId) {
+    @Path("/{pid}")
+    public Response updatePolls(PollModel input, @PathParam("pid") String pid) {
 		/* TODO get from database entity _pId and update all entries*/
+		// if votes for poll == 0, allow update		
         return Response.ok().entity(input).build();
     }
 	
 	
 	@DELETE
-    @Path("/{input}")
+    @Path("/{pid}")
 	@Produces("")
-    public Response deletePolls(JsonBean input) {
-        /* TODO find specified item and delete */
-        return Response.ok().build();
+    public Response deletePolls(@PathParam("pid") int pid) {
+		new DatabaseHandler().deletePoll(pid);
+        return Response.noContent().build();
     }
 }
