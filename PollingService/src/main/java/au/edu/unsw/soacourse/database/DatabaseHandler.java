@@ -24,8 +24,27 @@ public class DatabaseHandler {
 	public DatabaseHandler() {
 		createDb();
 	}
-
 	
+	/**
+	 * TODO: Delete all votes
+	 * Deletes a row from the table given the pid
+	 * @param pid
+	 */
+	public void deletePoll(int pid) {
+		
+		try (Connection c = connect()) {
+			c.createStatement().executeQuery("delete from polls where _pId = " + pid);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Create a poll from a model of values
+	 * @param p poll model
+	 * @return the pid of the poll
+	 */
 	public int createPoll(PollModel p) {
 		
 		try (Connection c = connect()) {
@@ -75,6 +94,7 @@ public class DatabaseHandler {
 	}
 	
 	/**
+	 * TODO: VOTES PART
 	 * Get polls that match clause, if no clause return all polls
 	 * @return
 	 */
@@ -102,9 +122,10 @@ public class DatabaseHandler {
 	}
 	
 	/**
+	 * TODO: VOTES PART
 	 * gets a single unique poll item
 	 * @param _pId
-	 * @return
+	 * @return the poll model
 	 */
 	public PollModel getPoll(int _pId) {
 		
