@@ -20,7 +20,7 @@ public class DatabaseHandler {
 	public static final String APPLICATIONS_TABLE = "Applications";
 	public static final String REVIEWS_TABLE = "Reviews";
 	
-	private static final String CREATE_JOB_POSTINGS_TABLE = "CREATE TABLE IF NOT EXISTS" + JOB_POSTINGS_TABLE + " ("
+	private static final String CREATE_JOB_POSTINGS_TABLE = "CREATE TABLE IF NOT EXISTS " + JOB_POSTINGS_TABLE + " ("
 			+ "_JobID integer PRIMARY KEY autoincrement,"
 			+ "CompanyName text,"
 			+ "SalaryRate real,"
@@ -31,7 +31,7 @@ public class DatabaseHandler {
 			+ "Classification text"
 			+ ");";
 	
-	private static final String CREATE_APPLICATIONS_TABLE = "CREATE TABLE IF NOT EXISTS" + APPLICATIONS_TABLE + " ("
+	private static final String CREATE_APPLICATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + APPLICATIONS_TABLE + " ("
 			+ "_AppID integer PRIMARY KEY autoincrement,"
 			+ "_JobID integer NOT NULL,"
 			+ "CandidatesDetails text,"
@@ -42,7 +42,7 @@ public class DatabaseHandler {
 			+ "FOREIGN KEY(_JobID) REFERENCES Jobs(_JobID)"
 			+ ");";
 	
-	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS" + REVIEWS_TABLE + ""
+	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + ""
 			+ "_reviewID PRIMARY KEY autoincrement,"
 			+ "_appID integer NOT NULL,"
 			+ "ReviewDetails text,"
@@ -75,10 +75,14 @@ public class DatabaseHandler {
 	private Connection connect(){
 		Connection conn = null;
 		try{
+			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection(URL);
 		}
 		catch(SQLException e){
 			System.out.println(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return conn;
 	}
@@ -248,10 +252,52 @@ public class DatabaseHandler {
 		}
 	}
 
-	public List<JobPosting> searchJobPostings(List<String> searchterms){
+	public List<JobPosting> searchJobPostings(JobPosting searchjp){
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
+		try(Connection conn = connect()){
+		String sqlquery = "SELECT * FROM Jobs WHERE";
+		if(!searchjp.getCompanyName().equals(null)){
+			sqlquery+="CompanyName = " + searchjp.getCompanyName();
+		}
+		if(!searchjp.getSalaryRate().equals(null)){
+			sqlquery+="AND SalaryRate = " + searchjp.getSalaryRate();
+		}
+		if(!searchjp.getPositionType().equals(null)){
+			sqlquery+="AND PositionType = " + searchjp.getPositionType();
+		}
+		if(!searchjp.getSalaryRate().equals(null)){
+			sqlquery+="AND Location = " + searchjp.getLocation();
+		}
+		if(!searchjp.getSalaryRate().equals(null)){
+			sqlquery+="AND JobDescription = " + searchjp.getJobDescription();
+		}
+		if(!searchjp.getSalaryRate().equals(null)){
+			sqlquery+="AND Status = " + searchjp.getStatus();
+		}
+		if(!searchjp.getSalaryRate().equals(null)){
+			sqlquery+="AND Classification = " + searchjp.getClassification();
+		}
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(sqlquery);
 		
+		while(rs.next()){
+			JobPosting temp = new JobPosting();
+			temp.set_jobID(rs.getInt("_JobID"));
+			temp.setCompanyName(rs.getString("CompanyName"));
+			temp.setSalaryRate(rs.getString("SalaryRate"));
+			temp.setPositionType(rs.getString("PositionType"));
+			temp.setLocation(rs.getString("Location"));
+			temp.setJobDescription(rs.getString("JobDescription"));
+			temp.setStatus(rs.getString("Status"));
+			temp.setClassification(rs.getString("Classification"));
+			jplist.add(temp);
+		}
 		return jplist;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public boolean deleteJobPosting(int _JobID){

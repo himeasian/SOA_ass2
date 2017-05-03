@@ -16,7 +16,7 @@ public class HelloWorld {
 
 
 	@GET
-	@Produces("json/application")
+	@Produces("application/json")
 	public String getAllJobPostings(){
 		String x = "";
 		return x;

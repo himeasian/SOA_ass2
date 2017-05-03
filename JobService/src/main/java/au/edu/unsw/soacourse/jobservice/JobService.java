@@ -1,5 +1,8 @@
 package au.edu.unsw.soacourse.jobservice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.Consumes;
 import au.edu.unsw.soacourse.model.*;
 import au.edu.unsw.soacourse.database.DatabaseHandler;
@@ -17,17 +20,26 @@ public class JobService {
 	@GET
 	@Produces("json/application")
 	public String getAllJobPostings(){
-		String x = "";
+		String x = "2";
 		return x;
 	}
 	
 	@GET
-	@Path("/{jobid}")
-	@Produces("json/application")
+	@Path("/{jobID}")
+	@Produces("application/json")
 	public Response getJobPosting(@PathParam("jobID") int jobID){
 		DatabaseHandler db = new DatabaseHandler();
 		JobPosting jp = db.getJobPosting(jobID);
 		
 		return Response.ok().entity(jp).build();
+	}
+	
+	@POST
+	@Produces("application/json")
+    @Consumes("application/json")
+	public Response createJobPosting(JobPosting source) throws URISyntaxException{
+		DatabaseHandler db = new DatabaseHandler();
+		int newid = db.createJobPosting(source);
+		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
 	}
 }
