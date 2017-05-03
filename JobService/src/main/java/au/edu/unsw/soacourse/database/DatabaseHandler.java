@@ -57,6 +57,7 @@ public class DatabaseHandler {
 	public DatabaseHandler(){
 		createDb();
 	}
+	
 	/**
 	 * Creates the databases relevant to Job Service
 	 */
@@ -217,7 +218,7 @@ public class DatabaseHandler {
 	
 	// NEED TO MODIFY TO HANDLE THAT IF STATUS IS SAY "IN-REVIEW" then it can't be updated to "OPEN"
 	public boolean updateJobPosting(JobPosting jp){
-		boolean flag = false;
+		
 		int JobID = jp.get_jobID();
 		try(Connection conn = connect()){
 			// Need to check if JobPosting exists first.
@@ -237,11 +238,48 @@ public class DatabaseHandler {
 				stmt.setString(6, jp.getStatus());
 				stmt.setString(7, jp.getClassification());
 				stmt.executeUpdate();
+				return true;
 			}
+			return false;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
-		return flag;
 	}
+
+	public List<JobPosting> searchJobPostings(List<String> searchterms){
+		List<JobPosting> jplist = new ArrayList<JobPosting>();
+		
+		return jplist;
+	}
+	
+	public boolean deleteJobPosting(int _JobID){
+		try(Connection conn = connect()){
+			// Check if job posting exists
+			String sqlquery = "SELECT COUNT(*) AS total FROM Jobs WHERE _JobID = ?";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, _JobID);
+			ResultSet rs = stmt.executeQuery();
+			
+			if(rs.next()){
+				int total = rs.getInt("total");
+				if(total>0){
+					String sqlquerydelete = "DELETE FROM Jobs WHERE _JobID = ?";
+					PreparedStatement stmt2 = conn.prepareStatement(sqlquerydelete);
+					stmt.setInt(1, _JobID);
+					ResultSet rs2 = stmt.executeQuery();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
 }
