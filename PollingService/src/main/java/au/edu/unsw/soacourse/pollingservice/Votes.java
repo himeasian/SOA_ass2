@@ -1,5 +1,8 @@
 package au.edu.unsw.soacourse.pollingservice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -8,6 +11,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import au.edu.unsw.soacourse.database.DatabaseHandler;
+import au.edu.unsw.soacourse.model.VoteModel;
 
 /**
  * Service operations on votes
@@ -21,24 +27,30 @@ public class Votes {
     @Produces("application/json")
     @Consumes("application/json")
     @Path("/")
-    public Response createVote(JsonBean input) {
-        input.setVal2(input.getVal1());
-        return Response.ok().entity(input).build();
+    public Response createVote(VoteModel input) throws URISyntaxException {
+        int r = new DatabaseHandler().createVote(input);
+        input.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(input).build();
     }
 	
 	@GET
-    @Path("/{input}")
+    @Path("/{voteId}")
     @Produces("application/json")
-    public Response getVote(@PathParam("input") String input) {
-        return Response.ok().build();
+    public Response getVote(@PathParam("voteId") int voteId) {
+        return Response.ok().entity(new DatabaseHandler().getVote(voteId)).build();
     }
 	
 	@PUT
     @Produces("application/json")
     @Consumes("application/json")
-    @Path("/{input}")
-    public Response updateVote(JsonBean input, @PathParam("input") String poll) {
-        input.setVal2(input.getVal1());
-        return Response.ok().entity(input).build();
+    @Path("/{voteId}")
+    public Response updateVote(VoteModel vm, @PathParam("voteId") int voteId) throws URISyntaxException {
+        int r = new DatabaseHandler().updateVote(vm, voteId);
+        if (r == 0) {
+        	vm.set_voteId(voteId);
+        	return Response.ok().entity(vm).build();
+        }
+        vm.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(vm).build();
     }
 }
