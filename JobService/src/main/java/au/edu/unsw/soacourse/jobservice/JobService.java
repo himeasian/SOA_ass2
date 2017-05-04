@@ -4,7 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.Consumes;
-import au.edu.unsw.soacourse.model.*;
+import au.edu.unsw.soacourse.model.JobPosting;
 import au.edu.unsw.soacourse.database.DatabaseHandler;
 
 import javax.ws.rs.GET;
@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 @Path("/jobs")
 public class JobService {
 	@GET
-	@Produces("json/application")
+	@Produces("application/json")
 	public String getAllJobPostings(){
 		String x = "2";
 		return x;
@@ -35,6 +35,7 @@ public class JobService {
 	}
 	
 	@POST
+	@Path("/")
 	@Produces("application/json")
     @Consumes("application/json")
 	public Response createJobPosting(JobPosting source) throws URISyntaxException{

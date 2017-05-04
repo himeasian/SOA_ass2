@@ -7,7 +7,7 @@
     <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer"/>
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <bean class="au.edu.unsw.soacourse.jobservice.HelloWorld"/>
+            <!--<bean class="au.edu.unsw.soacourse.jobservice.HelloWorld"/>-->
             <bean class="au.edu.unsw.soacourse.jobservice.JobService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
