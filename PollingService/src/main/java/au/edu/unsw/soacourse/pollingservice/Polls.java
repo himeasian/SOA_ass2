@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import au.edu.unsw.soacourse.database.DatabaseHandler;
 import au.edu.unsw.soacourse.model.PollModel;
+import au.edu.unsw.soacourse.model.VoteModel;
 
 /**
  * Service operations on polls
@@ -85,18 +86,66 @@ public class Polls {
     @Produces("application/json")
     @Consumes("application/json")
     @Path("/{pid}")
-    public Response updatePolls(PollModel input, @PathParam("pid") String pid) {
+    public Response updatePolls(PollModel p, @PathParam("pid") int pid) throws URISyntaxException {
 		/* TODO get from database entity _pId and update all entries*/
-		// if votes for poll == 0, allow update		
-        return Response.ok().entity(input).build();
+		// if votes for poll doesn't exist or has at least 1 vote, failz
+		DatabaseHandler dbh = new DatabaseHandler();
+		if (dbh.getPoll(pid) == null || dbh.countVotes(pid) > 0)
+			return Response.status(403).build();
+		
+		// return ok response if there was no id returned else return created response
+		int r = dbh.updatePoll(p, pid);
+		if (r == 0) {
+			p.set_pId(pid);
+			return Response.ok().entity(p).build();
+		}
+		p.set_pId(r);
+        return Response.created(new URI("/polls/" + r)).entity(p).build();
     }
 	
 	
 	@DELETE
     @Path("/{pid}")
-	@Produces("")
     public Response deletePolls(@PathParam("pid") int pid) {
 		new DatabaseHandler().deletePoll(pid);
         return Response.noContent().build();
+    }
+	
+	@POST
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Path("/{pid}/vote")
+    public Response createVote(VoteModel input, @PathParam("pid") int pid) throws URISyntaxException {
+        int r = new DatabaseHandler().createVote(input, pid);
+        input.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(input).build();
+    }
+	
+	@GET
+	@Path("/{pid}/vote")
+	@Produces("application/json")
+	public Response getVotes(@PathParam("pid") int pid) {
+		return Response.ok().entity(new DatabaseHandler().getVotes(pid)).build();
+	}
+	
+	@GET
+    @Path("/{pid}/vote/{voteId}")
+    @Produces("application/json")
+    public Response getVote(@PathParam("voteId") int voteId) {
+        return Response.ok().entity(new DatabaseHandler().getVote(voteId)).build();
+    }
+	
+	@PUT
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Path("/{pid}/vote/{voteId}")
+    public Response updateVote(VoteModel vm, @PathParam("voteId") int voteId) throws URISyntaxException {
+        int r = new DatabaseHandler().updateVote(vm, voteId);
+        if (r == 0) {
+        	vm.set_voteId(voteId);
+        	return Response.ok().entity(vm).build();
+        }
+        vm.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(vm).build();
     }
 }
