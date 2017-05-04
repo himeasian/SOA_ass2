@@ -11,6 +11,7 @@ import au.edu.unsw.soacourse.database.DatabaseHandler;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -52,6 +53,16 @@ public class JobService {
 	public Response deleteJobPosting(@PathParam("jobID") int jobID){
 		DatabaseHandler db = new DatabaseHandler();
 		boolean answer = db.deleteJobPosting(jobID);
+		
+		return Response.ok(answer).build();
+	}
+	
+	@PUT
+	@Path("/")
+	@Consumes("application/json")
+	public Response updateJobPosting(JobPosting ujp){
+		DatabaseHandler db = new DatabaseHandler();
+		boolean answer = db.updateJobPosting(ujp);
 		
 		return Response.ok(answer).build();
 	}

@@ -233,23 +233,28 @@ public class DatabaseHandler {
 		int JobID = jp.get_jobID();
 		try(Connection conn = connect()){
 			// Need to check if JobPosting exists first.
-			String sqlquery = "SELECT * FROM Jobs WHERE _JobID = ?";
-			PreparedStatement stmtcheck = conn.prepareStatement(sqlquery);
-			stmtcheck.setInt(1, JobID);
-			ResultSet rs = stmtcheck.executeQuery();
+			String sqlquery = "SELECT COUNT(*) AS total FROM Jobs WHERE _JobID = ?";
+			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
+			stmt1.setInt(1, JobID);
+			ResultSet rs = stmt1.executeQuery();
 			
 			if(rs.next()){
-				String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
-				PreparedStatement stmt = conn.prepareStatement(updatequery);
-				stmt.setString(1, jp.getCompanyName());
-				stmt.setFloat(2, jp.getSalaryRate());
-				stmt.setString(3, jp.getPositionType());
-				stmt.setString(4, jp.getLocation());
-				stmt.setString(5, jp.getJobDescription());
-				stmt.setString(6, jp.getStatus());
-				stmt.setString(7, jp.getClassification());
-				stmt.executeUpdate();
-				return true;
+				int total = rs.getInt("total");
+				if(total>0){
+					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
+					PreparedStatement stmt = conn.prepareStatement(updatequery);
+					stmt.setString(1, jp.getCompanyName());
+					stmt.setFloat(2, jp.getSalaryRate());
+					stmt.setString(3, jp.getPositionType());
+					stmt.setString(4, jp.getLocation());
+					stmt.setString(5, jp.getJobDescription());
+					stmt.setString(6, jp.getStatus());
+					stmt.setString(7, jp.getClassification());
+					stmt.setInt(8, JobID);
+					stmt.executeUpdate();
+					return true;
+				}
+				return false;
 			}
 			return false;
 		} catch (SQLException e) {
