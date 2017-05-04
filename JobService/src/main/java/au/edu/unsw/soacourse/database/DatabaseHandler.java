@@ -320,8 +320,8 @@ public class DatabaseHandler {
 				if(total>0){
 					String sqlquerydelete = "DELETE FROM Jobs WHERE _JobID = ?";
 					PreparedStatement stmt2 = conn.prepareStatement(sqlquerydelete);
-					stmt.setInt(1, _JobID);
-					ResultSet rs2 = stmt.executeQuery();
+					stmt2.setInt(1, _JobID);
+					int result = stmt2.executeUpdate();
 					return true;
 				}
 				return false;

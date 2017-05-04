@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+
 import au.edu.unsw.soacourse.model.JobPosting;
 import au.edu.unsw.soacourse.database.DatabaseHandler;
 
@@ -42,5 +44,15 @@ public class JobService {
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createJobPosting(source);
 		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+	}
+	
+	@DELETE
+	@Path("/{jobID}")
+	@Consumes("application/json")
+	public Response deleteJobPosting(@PathParam("jobID") int jobID){
+		DatabaseHandler db = new DatabaseHandler();
+		boolean answer = db.deleteJobPosting(jobID);
+		
+		return Response.ok(answer).build();
 	}
 }
