@@ -2,6 +2,7 @@ package au.edu.unsw.soacourse.jobservice;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,6 +16,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 
@@ -35,6 +37,22 @@ public class JobService {
 		JobPosting jp = db.getJobPosting(jobID);
 		
 		return Response.ok().entity(jp).build();
+	}
+	
+	@GET
+	@Path("/search")
+	@Produces("application/json")
+	public Response searchJobPostings(@QueryParam("companyName") String companyName, 
+			@QueryParam("salaryRate") String salaryRate,
+			@QueryParam("positionType") String positionType,
+			@QueryParam("location") String location,
+			@QueryParam("jobDescription") String jobDescription, 
+			@QueryParam("status") String status, 
+			@QueryParam("classification") String classification){
+		DatabaseHandler db = new DatabaseHandler();
+		List<JobPosting> ljp = db.searchJobPostings(companyName, salaryRate, positionType, location, jobDescription, status, classification);
+		
+		return Response.ok().entity(ljp).build();
 	}
 	
 	@POST

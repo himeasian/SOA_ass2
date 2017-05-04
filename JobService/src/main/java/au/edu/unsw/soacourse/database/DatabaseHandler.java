@@ -264,31 +264,63 @@ public class DatabaseHandler {
 		}
 	}
 
-	public List<JobPosting> searchJobPostings(JobPosting searchjp){
+	public List<JobPosting> searchJobPostings(String companyName, String salaryRate, String positionType, String location, String jobDescription, String status, String classification){
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
 		try(Connection conn = connect()){
-		String sqlquery = "SELECT * FROM Jobs WHERE";
-		if(!searchjp.getCompanyName().equals(null)){
-			sqlquery+="CompanyName = " + searchjp.getCompanyName();
+			List<String> querylist = new ArrayList<String>();
+			String sqlquery = "SELECT * FROM Jobs WHERE ";
+		if(companyName!=null){
+			querylist.add("CompanyName = " + companyName);
 		}
-		if(searchjp.getSalaryRate()!=0){
-			sqlquery+="AND SalaryRate = " + searchjp.getSalaryRate();
+		if(salaryRate!=null){
+			querylist.add("SalaryRate = " + salaryRate);
 		}
-		if(!searchjp.getPositionType().equals(null)){
-			sqlquery+="AND PositionType = " + searchjp.getPositionType();
+		if(positionType!=null){
+			querylist.add("PositionType = " + positionType);
 		}
-		if(!searchjp.getLocation().equals(null)){
-			sqlquery+="AND Location = " + searchjp.getLocation();
+		if(location!=null){
+			querylist.add("Location = " + location);
 		}
-		if(!searchjp.getJobDescription().equals(null)){
-			sqlquery+="AND JobDescription = " + searchjp.getJobDescription();
+		if(jobDescription!=null){
+			querylist.add("JobDescription = " + jobDescription);
 		}
-		if(!searchjp.getStatus().equals(null)){
-			sqlquery+="AND Status = " + searchjp.getStatus();
+		if(status!=null){
+			querylist.add("Status = " + status);
 		}
-		if(!searchjp.getClassification().equals(null)){
-			sqlquery+="AND Classification = " + searchjp.getClassification();
+		if(classification!=null){
+			querylist.add("Classification = " + classification);
 		}
+		for(int i = 0; i<querylist.size();i++){
+			if(i>0){
+				sqlquery+=", AND " + querylist.get(i);
+			}
+			else{
+				sqlquery+=querylist.get(i);
+			}
+		}
+		/*String sqlquery = "SELECT * FROM Jobs WHERE "
+			+ "(CompanyName = ? or ? is null) "
+			+ "AND (SalaryRate = ? or ? is null) "
+			+ "AND (PositionType = ? or ? is null) "
+			+ "AND (Location = ? or ? is null) "
+			+ "AND (JobDescription = ? or ? is null)"
+			+ "AND (Status = ? or ? is null)"
+			+ "AND (Classification = ? or ? is null)";
+		PreparedStatement stmt = conn.prepareStatement(sqlquery);
+		stmt.setString(1, companyName);
+		stmt.setString(2, companyName);
+		stmt.setFloat(3, salaryRate);
+		stmt.setFloat(4, salaryRate);
+		stmt.setString(5, positionType);
+		stmt.setString(6, positionType);
+		stmt.setString(7, location);
+		stmt.setString(8, location);
+		stmt.setString(9, jobDescription);
+		stmt.setString(10, jobDescription);
+		stmt.setString(11, status);
+		stmt.setString(12, status);
+		stmt.setString(13, classification);
+		stmt.setString(14, classification);*/
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(sqlquery);
 		
@@ -296,7 +328,7 @@ public class DatabaseHandler {
 			JobPosting temp = new JobPosting();
 			temp.set_jobID(rs.getInt("_JobID"));
 			temp.setCompanyName(rs.getString("CompanyName"));
-			temp.setSalaryRate(rs.getInt("SalaryRate"));
+			temp.setSalaryRate(rs.getFloat("SalaryRate"));
 			temp.setPositionType(rs.getString("PositionType"));
 			temp.setLocation(rs.getString("Location"));
 			temp.setJobDescription(rs.getString("JobDescription"));
