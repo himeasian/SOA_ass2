@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.unsw.soacourse.model.PollModel;
+import au.edu.unsw.soacourse.model.VoteModel;
 
 /**
  * Database handler for polling service
@@ -26,6 +27,152 @@ public class DatabaseHandler {
 	}
 	
 	/**
+	 * Counts num votes for current poll
+	 * @param pid
+	 * @return
+	 */
+	public int countVotes(int pid) {
+		
+		try (Connection c = connect()) {
+			String sql = "select count(*) from polls where _pId = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, pid);
+			
+			return pstmt.executeQuery().getInt(1);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**
+	 * Update a vote if it exists, if it doesn't exist, then delete it
+	 * @param vm vote model 
+	 * @param voteId id of the vote to be updated
+	 * @return new id if inserted else 0
+	 */
+	public int updateVote(VoteModel vm, int voteId) {
+		
+		try (Connection c = connect()) {
+			// update if exists
+			String sql = "update votes "
+					+ "set participant_name = ?, chosen_option = ? "
+					+ "where _voteId = ? and _pId = ?;";
+			
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, vm.getParticipantName());
+			pstmt.setString(2, vm.getChosenOption());
+			pstmt.setInt(3, voteId);
+			pstmt.setInt(4, vm.get_pId());
+			pstmt.executeUpdate();
+			
+			// if nothing happened.. insert
+			sql = "insert into votes(_pId, participant_name, chosen_option) "
+					+ "select ?, ?, ? "
+					+ "where (select Changes() = 0);";
+			
+			pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, vm.get_pId());
+			pstmt.setString(2, vm.getParticipantName());
+			pstmt.setString(3, vm.getChosenOption());
+			pstmt.executeUpdate();
+			
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	/**
+	 * Gets all votes for corresponding poll
+	 * @param pid id of poll to retrieve votes
+	 * @return list of votes
+	 */
+	public List<VoteModel> getVotes(int pid) {
+		
+		try (Connection c = connect()) {
+			String sql = "select * from votes where _pId = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, pid);
+			ResultSet rs = pstmt.executeQuery();
+			
+			List<VoteModel> vm = new ArrayList<VoteModel>();
+			while(rs.next()) {
+				vm.add(makeVoteModel(rs));
+			}
+			return vm;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+				
+	
+	/**
+	 * Gets a vote requested by id
+	 * @param voteId the id
+	 * @return a model of the vote
+	 */
+	public VoteModel getVote(int voteId) {
+		
+		try (Connection c = connect()) {
+			String sql = "select * from votes where _voteId = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, voteId);
+			ResultSet rs = pstmt.executeQuery();
+			
+			VoteModel vm = null;
+			if (rs.next()) {
+				vm = makeVoteModel(rs);
+			}
+			return vm;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+	
+	private VoteModel makeVoteModel(ResultSet rs) throws SQLException {
+		VoteModel vm = new VoteModel();
+		vm.set_voteId(rs.getInt("_voteId"));
+		vm.set_pId(rs.getInt("_pId"));
+		vm.setParticipantName(rs.getString("participant_name"));
+		vm.setChosenOption(rs.getString("chosen_option"));
+		return vm;
+	}
+	
+	/**
+	 * Creates a vote from model of values
+	 * @param v vote model POJO
+	 * @return id of new vote item in table
+	 */
+	public int createVote(VoteModel v, int pid) {
+		
+		try (Connection c = connect()) {
+			String sql = "insert into votes(_pId,"
+					+ "participant_name, chosen_option) "
+					+ "values(?,?,?);";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, pid);
+			pstmt.setString(2, v.getParticipantName());
+			pstmt.setString(3, v.getChosenOption());
+			pstmt.executeUpdate();
+			
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	/**
 	 * TODO: Delete all votes
 	 * Deletes a row from the table given the pid
 	 * @param pid
@@ -39,6 +186,50 @@ public class DatabaseHandler {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Updates a poll, if doesn't exist creates a new one
+	 * @param p model of poll to update with
+	 * @param pid poll id to update
+	 * @return id of new poll or 0
+	 */
+	public int updatePoll(PollModel p, int pid) {
+		
+		try (Connection c = connect()) {
+			// update if exists
+			String sql = "update polls "
+					+ "set title = ?, description = ?, type = ?, options = ?, comments = ? "
+					+ "where _pId = ?;";
+			
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, p.getTitle());
+			pstmt.setString(2, p.getDescription());
+			pstmt.setString(3, p.getType());
+			pstmt.setString(4, p.getOptions());
+			pstmt.setString(5, p.getComments());
+			pstmt.setInt(6, pid);
+			pstmt.executeUpdate();
+			
+			// if nothing happened.. insert
+			sql = "insert into polls(title, description, type, options, comments) "
+					+ "select ?, ?, ?, ?, ? "
+					+ "where (select Changes() = 0);";
+			
+			pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, p.getTitle());
+			pstmt.setString(2, p.getDescription());
+			pstmt.setString(3, p.getType());
+			pstmt.setString(4, p.getOptions());
+			pstmt.setString(5, p.getComments());
+			pstmt.executeUpdate();
+			
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
 	/**
 	 * Create a poll from a model of values
@@ -48,32 +239,9 @@ public class DatabaseHandler {
 	public int createPoll(PollModel p) {
 		
 		try (Connection c = connect()) {
-//			// check if exists first
-//			String sel = "select _pId from polls where " +
-//						"title = ? and " +
-//						"description = ? and " +
-//						"type = ? and " +
-//						"options = ? and " +
-//						"comments = ? and " +
-//						"final_choice = ?";
-//			
-//			PreparedStatement pstmt = c.prepareStatement(sel);
-//			pstmt.setString(1, p.getTitle());
-//			pstmt.setString(2, p.getDescription());
-//			pstmt.setString(3, p.getType());
-//			pstmt.setString(4, p.getOptions());
-//			pstmt.setString(5, p.getComments());
-//			pstmt.setString(6, p.getFinalChoice());
-//			ResultSet rs = pstmt.executeQuery();
-//			
-//			// if exists, return the id 
-//			if (rs.next()) {
-//				return rs.getInt(1);
-//			}
-
 			String ins = "insert into polls(title, "
 					+ "description, type, options, "
-					+ "comments, final_choice) values(?,?,?,?,?,?)";
+					+ "comments, final_choice) values(?,?,?,?,?,?);";
 			PreparedStatement istmt = c.prepareStatement(ins);
 			istmt.setString(1, p.getTitle());
 			istmt.setString(2, p.getDescription());
@@ -106,7 +274,7 @@ public class DatabaseHandler {
 			String sql = "select * from polls";
 			if (!clause.isEmpty()) 
 				sql += " where " + clause;
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery(sql + ";");
 			
 			List<PollModel> p = new ArrayList<PollModel>();
 			while(rs.next()) {
@@ -130,7 +298,7 @@ public class DatabaseHandler {
 	public PollModel getPoll(int _pId) {
 		
 		try (Connection c = connect()) {
-			String sql = "select * from polls where _pId = ?";
+			String sql = "select * from polls where _pId = ?;";
 			PreparedStatement pstmt = c.prepareStatement(sql);
 			pstmt.setInt(1, _pId);
 			ResultSet rs = pstmt.executeQuery();

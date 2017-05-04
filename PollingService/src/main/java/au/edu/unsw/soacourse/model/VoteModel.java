@@ -10,6 +10,7 @@ public class VoteModel {
 	private int _pId;
 	private String participantName;
 	private String chosenOption;
+	
 	public int get_voteId() {
 		return _voteId;
 	}
