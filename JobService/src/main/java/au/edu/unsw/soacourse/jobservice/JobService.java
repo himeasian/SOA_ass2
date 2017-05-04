@@ -19,9 +19,9 @@ import javax.ws.rs.core.Response;
 public class JobService {
 	@GET
 	@Produces("application/json")
-	public String getAllJobPostings(){
-		String x = "2";
-		return x;
+	public Response getAllJobPostings(){
+		
+		return Response.ok().entity(new DatabaseHandler().getJobPostings()).build();
 	}
 	
 	@GET
@@ -37,7 +37,7 @@ public class JobService {
 	@POST
 	@Path("/")
 	@Produces("application/json")
-    @Consumes("application/json")
+	@Consumes("application/json")
 	public Response createJobPosting(JobPosting source) throws URISyntaxException{
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createJobPosting(source);

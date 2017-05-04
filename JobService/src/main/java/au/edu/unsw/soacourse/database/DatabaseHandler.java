@@ -21,7 +21,7 @@ public class DatabaseHandler {
 	public static final String REVIEWS_TABLE = "Reviews";
 	
 	private static final String CREATE_JOB_POSTINGS_TABLE = "CREATE TABLE IF NOT EXISTS " + JOB_POSTINGS_TABLE + " ("
-			+ "_JobID integer PRIMARY KEY autoincrement,"
+			+ "_JobID integer PRIMARY KEY,"
 			+ "CompanyName text,"
 			+ "SalaryRate real,"
 			+ "PositionType text,"
@@ -32,7 +32,7 @@ public class DatabaseHandler {
 			+ ");";
 	
 	private static final String CREATE_APPLICATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + APPLICATIONS_TABLE + " ("
-			+ "_AppID integer PRIMARY KEY autoincrement,"
+			+ "_AppID integer PRIMARY KEY,"
 			+ "_JobID integer NOT NULL,"
 			+ "CandidatesDetails text,"
 			+ "CoverLetter text,"
@@ -42,8 +42,8 @@ public class DatabaseHandler {
 			+ "FOREIGN KEY(_JobID) REFERENCES Jobs(_JobID)"
 			+ ");";
 	
-	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + ""
-			+ "_reviewID PRIMARY KEY autoincrement,"
+	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + " ("
+			+ "_reviewID PRIMARY KEY,"
 			+ "_appID integer NOT NULL,"
 			+ "ReviewDetails text,"
 			+ "Comments text,"
@@ -95,9 +95,10 @@ public class DatabaseHandler {
 	 */
 	private JobPosting generateJobPosting(ResultSet rs) throws SQLException{
 		JobPosting jp = new JobPosting();
+		//rs.next();
 		jp.set_jobID(rs.getInt("_JobID"));
 		jp.setCompanyName(rs.getString("CompanyName"));
-		jp.setSalaryRate(rs.getString("SalaryRate"));
+		jp.setSalaryRate(rs.getFloat("SalaryRate"));
 		jp.setPositionType(rs.getString("PositionType"));
 		jp.setLocation(rs.getString("Location"));
 		jp.setJobDescription(rs.getString("JobDescription"));
@@ -123,13 +124,16 @@ public class DatabaseHandler {
 					+ "AND Classification = ?";
 			PreparedStatement stmtcheck = conn.prepareStatement(stmtstrcheck);
 			stmtcheck.setString(1, jp.getCompanyName());
-			stmtcheck.setString(2, jp.getSalaryRate());
+			stmtcheck.setFloat(2, jp.getSalaryRate());
 			stmtcheck.setString(3, jp.getPositionType());
 			stmtcheck.setString(4, jp.getLocation());
 			stmtcheck.setString(5, jp.getJobDescription());
 			stmtcheck.setString(6, jp.getStatus());
 			stmtcheck.setString(7, jp.getClassification());
 			
+			//String stmt = "SELECT * FROM Jobs";
+			//PreparedStatement stme = conn.prepareStatement(stmtcheck);
+			//ResultSet rs = stme.executeQuery();
 			ResultSet rs =stmtcheck.executeQuery();
 			
 			if(rs.next()){
@@ -147,21 +151,26 @@ public class DatabaseHandler {
 	}
 
 	public int createJobPosting(JobPosting jp){
-		//int result=0;
 		
 		// Check to see if the JobPosting already exists in the JobPosting Table
 		try(Connection conn = connect()){
 			
-			int checkid = checkJobPostingExists(jp);
-			
+			/*int checkid = checkJobPostingExists(jp);
 			if(checkid>0){
 				return checkid; 
 			}
-			else{
-				String stmtstrinsert = "INSERT INTO Jobs (?,?,?,?,?,?,?)";
+			else{*/
+				String stmtstrinsert = "INSERT INTO Jobs(CompanyName, "
+						+ "SalaryRate, "
+						+ "PositionType, "
+						+ "Location, "
+						+ "JobDescription, "
+						+ "Status, "
+						+ "Classification) "
+						+ "VALUES (?,?,?,?,?,?,?)";
 				PreparedStatement stmtinsert = conn.prepareStatement(stmtstrinsert);
 				stmtinsert.setString(1, jp.getCompanyName());
-				stmtinsert.setString(2, jp.getSalaryRate());
+				stmtinsert.setFloat(2, jp.getSalaryRate());
 				stmtinsert.setString(3, jp.getPositionType());
 				stmtinsert.setString(4, jp.getLocation());
 				stmtinsert.setString(5, jp.getJobDescription());
@@ -169,10 +178,8 @@ public class DatabaseHandler {
 				stmtinsert.setString(7, jp.getClassification());
 				stmtinsert.executeUpdate();	
 				
-				//ResultSet rscheck = stmtcheck.executeQuery();
-				//rscheck.next();
-				return checkJobPostingExists(jp);
-			}
+				return conn.createStatement().executeQuery("SELECT last_insert_rowid();").getInt(1);
+				
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
@@ -189,7 +196,7 @@ public class DatabaseHandler {
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, _JobID);
 			ResultSet rs = pstmt.executeQuery();
-			rs.next();
+			//rs.next();
 			jp = generateJobPosting(rs);
 			return jp;
 		} catch (SQLException e) {
@@ -235,7 +242,7 @@ public class DatabaseHandler {
 				String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
 				PreparedStatement stmt = conn.prepareStatement(updatequery);
 				stmt.setString(1, jp.getCompanyName());
-				stmt.setString(2, jp.getSalaryRate());
+				stmt.setFloat(2, jp.getSalaryRate());
 				stmt.setString(3, jp.getPositionType());
 				stmt.setString(4, jp.getLocation());
 				stmt.setString(5, jp.getJobDescription());
@@ -259,22 +266,22 @@ public class DatabaseHandler {
 		if(!searchjp.getCompanyName().equals(null)){
 			sqlquery+="CompanyName = " + searchjp.getCompanyName();
 		}
-		if(!searchjp.getSalaryRate().equals(null)){
+		if(searchjp.getSalaryRate()!=0){
 			sqlquery+="AND SalaryRate = " + searchjp.getSalaryRate();
 		}
 		if(!searchjp.getPositionType().equals(null)){
 			sqlquery+="AND PositionType = " + searchjp.getPositionType();
 		}
-		if(!searchjp.getSalaryRate().equals(null)){
+		if(!searchjp.getLocation().equals(null)){
 			sqlquery+="AND Location = " + searchjp.getLocation();
 		}
-		if(!searchjp.getSalaryRate().equals(null)){
+		if(!searchjp.getJobDescription().equals(null)){
 			sqlquery+="AND JobDescription = " + searchjp.getJobDescription();
 		}
-		if(!searchjp.getSalaryRate().equals(null)){
+		if(!searchjp.getStatus().equals(null)){
 			sqlquery+="AND Status = " + searchjp.getStatus();
 		}
-		if(!searchjp.getSalaryRate().equals(null)){
+		if(!searchjp.getClassification().equals(null)){
 			sqlquery+="AND Classification = " + searchjp.getClassification();
 		}
 		Statement stmt = conn.createStatement();
@@ -284,7 +291,7 @@ public class DatabaseHandler {
 			JobPosting temp = new JobPosting();
 			temp.set_jobID(rs.getInt("_JobID"));
 			temp.setCompanyName(rs.getString("CompanyName"));
-			temp.setSalaryRate(rs.getString("SalaryRate"));
+			temp.setSalaryRate(rs.getInt("SalaryRate"));
 			temp.setPositionType(rs.getString("PositionType"));
 			temp.setLocation(rs.getString("Location"));
 			temp.setJobDescription(rs.getString("JobDescription"));

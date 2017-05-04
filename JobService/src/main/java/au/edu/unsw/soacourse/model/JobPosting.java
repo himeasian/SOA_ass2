@@ -4,7 +4,7 @@ public class JobPosting {
 	
 	private int _jobID;
 	private String CompanyName;
-	private String SalaryRate;
+	private float SalaryRate;
 	private String PositionType;
 	private String Location;
 	private String JobDescription;
@@ -22,10 +22,10 @@ public class JobPosting {
 	public void setCompanyName(String companyName) {
 		CompanyName = companyName;
 	}
-	public String getSalaryRate() {
+	public float getSalaryRate() {
 		return SalaryRate;
 	}
-	public void setSalaryRate(String salaryRate) {
+	public void setSalaryRate(float salaryRate) {
 		SalaryRate = salaryRate;
 	}
 	public String getPositionType() {
@@ -58,8 +58,5 @@ public class JobPosting {
 	public void setClassification(String classification) {
 		Classification = classification;
 	}
-	
-	
-	
 	
 }
