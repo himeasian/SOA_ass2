@@ -14,7 +14,6 @@
 		<jaxrs:serviceBeans>
 			<bean class="au.edu.unsw.soacourse.pollingservice.HelloWorld" />
 			<bean class="au.edu.unsw.soacourse.pollingservice.Polls" />
-			<bean class="au.edu.unsw.soacourse.pollingservice.Votes" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />

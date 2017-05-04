@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import au.edu.unsw.soacourse.database.DatabaseHandler;
 import au.edu.unsw.soacourse.model.PollModel;
+import au.edu.unsw.soacourse.model.VoteModel;
 
 /**
  * Service operations on polls
@@ -109,5 +109,43 @@ public class Polls {
     public Response deletePolls(@PathParam("pid") int pid) {
 		new DatabaseHandler().deletePoll(pid);
         return Response.noContent().build();
+    }
+	
+	@POST
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Path("/{pid}/vote")
+    public Response createVote(VoteModel input, @PathParam("pid") int pid) throws URISyntaxException {
+        int r = new DatabaseHandler().createVote(input, pid);
+        input.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(input).build();
+    }
+	
+	@GET
+	@Path("/{pid}/vote")
+	@Produces("application/json")
+	public Response getVotes(@PathParam("pid") int pid) {
+		return Response.ok().entity(new DatabaseHandler().getVotes(pid)).build();
+	}
+	
+	@GET
+    @Path("/{pid}/vote/{voteId}")
+    @Produces("application/json")
+    public Response getVote(@PathParam("voteId") int voteId) {
+        return Response.ok().entity(new DatabaseHandler().getVote(voteId)).build();
+    }
+	
+	@PUT
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Path("/{pid}/vote/{voteId}")
+    public Response updateVote(VoteModel vm, @PathParam("voteId") int voteId) throws URISyntaxException {
+        int r = new DatabaseHandler().updateVote(vm, voteId);
+        if (r == 0) {
+        	vm.set_voteId(voteId);
+        	return Response.ok().entity(vm).build();
+        }
+        vm.set_voteId(r);
+        return Response.created(new URI("/vote/" + r)).entity(vm).build();
     }
 }

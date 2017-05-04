@@ -87,6 +87,33 @@ public class DatabaseHandler {
 	}
 	
 	/**
+	 * Gets all votes for corresponding poll
+	 * @param pid id of poll to retrieve votes
+	 * @return list of votes
+	 */
+	public List<VoteModel> getVotes(int pid) {
+		
+		try (Connection c = connect()) {
+			String sql = "select * from votes where _pId = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setInt(1, pid);
+			ResultSet rs = pstmt.executeQuery();
+			
+			List<VoteModel> vm = new ArrayList<VoteModel>();
+			while(rs.next()) {
+				vm.add(makeVoteModel(rs));
+			}
+			return vm;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+				
+	
+	/**
 	 * Gets a vote requested by id
 	 * @param voteId the id
 	 * @return a model of the vote
@@ -101,19 +128,23 @@ public class DatabaseHandler {
 			
 			VoteModel vm = null;
 			if (rs.next()) {
-				vm = new VoteModel();
-				vm.set_voteId(rs.getInt("_voteId"));
-				vm.set_pId(rs.getInt("_pId"));
-				vm.setParticipantName(rs.getString("participant_name"));
-				vm.setChosenOption(rs.getString("chosen_option"));
+				vm = makeVoteModel(rs);
 			}
 			return vm;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		
-		return null;
+			return null;
+		}	
+	}
+	
+	private VoteModel makeVoteModel(ResultSet rs) throws SQLException {
+		VoteModel vm = new VoteModel();
+		vm.set_voteId(rs.getInt("_voteId"));
+		vm.set_pId(rs.getInt("_pId"));
+		vm.setParticipantName(rs.getString("participant_name"));
+		vm.setChosenOption(rs.getString("chosen_option"));
+		return vm;
 	}
 	
 	/**
@@ -121,14 +152,14 @@ public class DatabaseHandler {
 	 * @param v vote model POJO
 	 * @return id of new vote item in table
 	 */
-	public int createVote(VoteModel v) {
+	public int createVote(VoteModel v, int pid) {
 		
 		try (Connection c = connect()) {
 			String sql = "insert into votes(_pId,"
 					+ "participant_name, chosen_option) "
 					+ "values(?,?,?);";
 			PreparedStatement pstmt = c.prepareStatement(sql);
-			pstmt.setInt(1, v.get_pId());
+			pstmt.setInt(1, pid);
 			pstmt.setString(2, v.getParticipantName());
 			pstmt.setString(3, v.getChosenOption());
 			pstmt.executeUpdate();
