@@ -513,33 +513,56 @@ public class DatabaseHandler {
 	}
 	
 	public List<Review> getReviews(int appid, int reviewid){
-		
+		List<Review> lrev = new ArrayList<Review>();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Reviews";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlquery);
+			while(rs.next()){
+				lrev.add(generateReview(rs));
+			}
+			
+			return lrev;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
+	private Review generateReview(ResultSet rs) throws SQLException {
+		Review rev = new Review();
+		//rs.next();
+		rev.set_reviewID(rs.getInt("_ReviewID"));
+		rev.set_appID(rs.getInt("_AppID"));
+		rev.setReviewDetails(rs.getString("ReviewDetails"));
+		rev.setComments(rs.getString("Comments"));
+		rev.setDecision(rs.getString("Decision"));
+		
+		
+		return rev;
+	}
+
 	public boolean updateReview(Review rev){
-		int JobID = rev.get_jobID();
+		int ReviewID = rev.get_reviewID();
 		int AppID = rev.get_appID();
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
-			String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
+			String sqlquery = "SELECT COUNT(*) AS total FROM Reviews WHERE _ReviewID = ? AND _AppID = ?";
 			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
-			stmt1.setInt(1, AppID);
-			stmt1.setInt(2, JobID);
+			stmt1.setInt(1, ReviewID);
+			stmt1.setInt(2, AppID);
 			
 			ResultSet rs = stmt1.executeQuery();
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
 				if(total>0){
-					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
+					String updatequery = "UPDATE Applications SET ReviewDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
-					stmt.setString(1, app.getCandidatesDetails());
-					stmt.setString(2, app.getCoverLetter());
-					stmt.setString(3, app.getStatus());
-					stmt.setString(4, app.getAttachment1());
-					stmt.setString(5, app.getAttachment2());
-					stmt.setInt(6, app.get_appID());
-					stmt.setInt(7, app.get_jobID());
+					stmt.setString(1, rev.getReviewDetails());
+					stmt.setString(2, rev.getComments());
+					stmt.setString(3, rev.getDecision());
 					stmt.executeUpdate();
 					return true;
 				}
