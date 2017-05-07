@@ -6,11 +6,12 @@ public class Review {
 	private String ReviewDetails;
 	private String Comments;
 	private String Decision;
-	
 	public int get_reviewID() {
 		return _reviewID;
 	}
-	
+	public void set_reviewID(int _reviewID) {
+		this._reviewID = _reviewID;
+	}
 	public int get_appID() {
 		return _appID;
 	}
@@ -35,4 +36,5 @@ public class Review {
 	public void setDecision(String decision) {
 		Decision = decision;
 	}
+	
 }

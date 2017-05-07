@@ -7,7 +7,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 
-import au.edu.unsw.soacourse.model.JobPosting;
+import au.edu.unsw.soacourse.model.*;
 import au.edu.unsw.soacourse.database.DatabaseHandler;
 
 import javax.ws.rs.GET;
@@ -40,6 +40,16 @@ public class JobService {
 	}
 	
 	@GET
+	@Path("/{jobID}/application/{appID}")
+	@Produces("application/json")
+	public Response getApplication(@PathParam("jobID") int jobID, @PathParam("appID") int appID){
+		DatabaseHandler db = new DatabaseHandler();
+		Application app = db.getApplication(jobID, appID);
+		return Response.ok().entity(app).build();
+	}
+	
+	
+	@GET
 	@Path("/search")
 	@Produces("application/json")
 	public Response searchJobPostings(@QueryParam("companyName") String companyName, 
@@ -65,6 +75,28 @@ public class JobService {
 		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
 	}
 	
+	@POST
+	@Path("/application")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response createApplication(Application source) throws URISyntaxException{
+		DatabaseHandler db = new DatabaseHandler();
+		int newid = db.createApplication(source);
+		source.set_appID(newid);
+		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+	}
+	
+	@POST
+	@Path("/application/review")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response createReview(Review source) throws URISyntaxException{
+		DatabaseHandler db = new DatabaseHandler();
+		int newid = db.createReview(source);
+		source.set_appID(newid);
+		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+	}
+	
 	@DELETE
 	@Path("/{jobID}")
 	@Consumes("application/json")
@@ -84,4 +116,15 @@ public class JobService {
 		
 		return Response.ok(answer).build();
 	}
+	
+	@PUT
+	@Path("/application")
+	@Consumes("application/json")
+	public Response updateApplication(Application uapp){
+		DatabaseHandler db = new DatabaseHandler();
+		boolean answer = db.updateApplication(uapp);
+		
+		return Response.ok(answer).build();
+	}
+
 }

@@ -64,9 +64,9 @@ public class DatabaseHandler {
 	private void createDb() {	
         try (Connection conn = connect()) {
                 Statement stmt = conn.createStatement();
-                stmt.executeQuery(CREATE_JOB_POSTINGS_TABLE);
-                stmt.executeQuery(CREATE_APPLICATIONS_TABLE);
-                stmt.executeQuery(CREATE_REVIEWS_TABLE);
+                stmt.execute(CREATE_JOB_POSTINGS_TABLE);
+                stmt.execute(CREATE_APPLICATIONS_TABLE);
+                stmt.execute(CREATE_REVIEWS_TABLE);
         } catch (SQLException e) {
 			System.err.println(e.getMessage());
         }
@@ -270,7 +270,7 @@ public class DatabaseHandler {
 			List<String> querylist = new ArrayList<String>();
 			String sqlquery = "SELECT * FROM Jobs WHERE ";
 		if(companyName!=null){
-			querylist.add("CompanyName = " + companyName);
+			querylist.add("CompanyName = '" + companyName +"'");
 		}
 		if(salaryRate!=null){
 			querylist.add("SalaryRate = " + salaryRate);
@@ -298,6 +298,9 @@ public class DatabaseHandler {
 				sqlquery+=querylist.get(i);
 			}
 		}
+		sqlquery+=";";
+		System.out.println("query:" + sqlquery);
+		
 		/*String sqlquery = "SELECT * FROM Jobs WHERE "
 			+ "(CompanyName = ? or ? is null) "
 			+ "AND (SalaryRate = ? or ? is null) "
@@ -371,5 +374,182 @@ public class DatabaseHandler {
 		}
 	}
 	
+	public Application getApplication(int jobid, int appid){
+		Application app = new Application();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Applications WHERE _AppID = ? AND _JobID = ?;";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, appid);
+			stmt.setInt(2, jobid);
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			app.set_appID(rs.getInt("_AppID"));
+			app.set_jobID(rs.getInt("_JobID"));
+			app.setCandidatesDetails(rs.getString("CandidatesDetails"));
+			app.setCoverLetter(rs.getString("CoverLetter"));
+			app.setStatus(rs.getString("Status"));
+			app.setAttachment1(rs.getString("Attachment1"));
+			app.setAttachment2(rs.getString("Attachment2"));
+			
+			return app;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
+	public int createApplication(Application app){
+		
+		try(Connection conn = connect()){
+			String sqlquery = "INSERT INTO Reviews("
+					+ "_AppID, "
+					+ ", "
+					+ "CoverLetter, "
+					+ "Status, "
+					+ "Attachment1, "
+					+ "Attachment2) "
+					+ "VALUES (?,?,?,?,?,?)";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, app.get_jobID());
+			stmt.setString(2, app.getCandidatesDetails());
+			stmt.setString(3, app.getCoverLetter());
+			stmt.setString(4, app.getStatus());
+			stmt.setString(5, app.getAttachment1());
+			stmt.setString(6, app.getAttachment2());
+			stmt.executeUpdate();
+			
+			return conn.createStatement().executeQuery("SELECT last_insert_rowid();").getInt(1);
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	public boolean updateApplication(Application app){
+		int JobID = app.get_jobID();
+		int AppID = app.get_appID();
+		try(Connection conn = connect()){
+			// Need to check if Application exists first.
+			String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
+			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
+			stmt1.setInt(1, AppID);
+			stmt1.setInt(2, JobID);
+			
+			ResultSet rs = stmt1.executeQuery();
+			
+			if(rs.next()){
+				int total = rs.getInt("total");
+				if(total>0){
+					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
+					PreparedStatement stmt = conn.prepareStatement(updatequery);
+					stmt.setString(1, app.getCandidatesDetails());
+					stmt.setString(2, app.getCoverLetter());
+					stmt.setString(3, app.getStatus());
+					stmt.setString(4, app.getAttachment1());
+					stmt.setString(5, app.getAttachment2());
+					stmt.setInt(6, app.get_appID());
+					stmt.setInt(7, app.get_jobID());
+					stmt.executeUpdate();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public int createReview(Review rev){
+		try(Connection conn = connect()){
+			String sqlquery = "INSERT INTO Reviews("
+					+ "_JobID, "
+					+ "Reviewdetails, "
+					+ "Comments, "
+					+ "Decision) "
+					+ "VALUES (?,?,?,?)";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, rev.get_appID());
+			stmt.setString(2, rev.getReviewDetails());
+			stmt.setString(3, rev.getComments());
+			stmt.setString(4, rev.getDecision());
+			stmt.executeUpdate();
+			
+			return conn.createStatement().executeQuery("SELECT last_insert_rowid();").getInt(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
+		
+	
+	public Review getReview(int appid, int reviewid){
+		Review review = new Review();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Reviews WHERE _ReviewID = ? AND _AppID = ?;";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, reviewid);
+			stmt.setInt(2, appid);
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			review.set_reviewID(rs.getInt("_ReviewID"));
+			review.set_appID(rs.getInt("_AppID"));
+			review.setReviewDetails(rs.getString("ReviewDetails"));
+			review.setComments(rs.getString("Comments"));
+			review.setDecision(rs.getString("Decision"));
+			
+			return review;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Review> getReviews(int appid, int reviewid){
+		
+	}
+	
+	public boolean updateReview(Review rev){
+		int JobID = rev.get_jobID();
+		int AppID = rev.get_appID();
+		try(Connection conn = connect()){
+			// Need to check if Application exists first.
+			String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
+			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
+			stmt1.setInt(1, AppID);
+			stmt1.setInt(2, JobID);
+			
+			ResultSet rs = stmt1.executeQuery();
+			
+			if(rs.next()){
+				int total = rs.getInt("total");
+				if(total>0){
+					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
+					PreparedStatement stmt = conn.prepareStatement(updatequery);
+					stmt.setString(1, app.getCandidatesDetails());
+					stmt.setString(2, app.getCoverLetter());
+					stmt.setString(3, app.getStatus());
+					stmt.setString(4, app.getAttachment1());
+					stmt.setString(5, app.getAttachment2());
+					stmt.setInt(6, app.get_appID());
+					stmt.setInt(7, app.get_jobID());
+					stmt.executeUpdate();
+					return true;
+				}
+				return false;
+			}
+			return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

@@ -4,79 +4,55 @@ public class Application {
 
 	private int _appID;
 	private int _jobID;
-	private String CompanyName;
-	private String SalaryRate;
-	private String PositionType;
-	private String Location;
-	private String JobDescription;
+	private String CandidatesDetails;
+	private String CoverLetter;
 	private String Status;
-	private String Classification;
-	
-	public int getJobID(){
-		return _jobID;
-	}
-	
-	public int getAppID(){
+	private String Attachment1;
+	private String Attachment2;
+	public int get_appID() {
 		return _appID;
 	}
-	
-	public void setJobId(int jobid){
-		this._jobID=jobid;
+	public void set_appID(int _appID) {
+		this._appID = _appID;
 	}
-	
-	public String getCompanyName(){
-		return CompanyName;
+	public int get_jobID() {
+		return _jobID;
 	}
-	public void setCompanyName(String companyname){
-		this.CompanyName=companyname;
+	public void set_jobID(int _jobID) {
+		this._jobID = _jobID;
 	}
-	
-	public String getSalaryRate(){
-		return SalaryRate;
+	public String getCandidatesDetails() {
+		return CandidatesDetails;
 	}
-	
-	public void setSalaryRate(String salaryrate){
-		this.SalaryRate=salaryrate;
+	public void setCandidatesDetails(String candidatesDetails) {
+		CandidatesDetails = candidatesDetails;
 	}
-	
-	public String getPositionType(){
-		return PositionType;
+	public String getCoverLetter() {
+		return CoverLetter;
 	}
-	
-	public void setPositionType(String positiontype){
-		this.PositionType=positiontype;
+	public void setCoverLetter(String coverLetter) {
+		CoverLetter = coverLetter;
 	}
-	
-	public String getLocation(){
-		return Location;
-	}
-	
-	public void setLocation(String location){
-		this.Location=location;
-	}
-	
-	public String getJobDescription(){
-		return JobDescription;
-	}
-	
-	public void setJobDescription(String jobdescription){
-		this.JobDescription=jobdescription;
-	}
-	
-	public String getStatus(){
+	public String getStatus() {
 		return Status;
 	}
-	
-	public void setStatus(String status){
-		this.Status=status;
+	public void setStatus(String status) {
+		Status = status;
+	}
+	public String getAttachment1() {
+		return Attachment1;
+	}
+	public void setAttachment1(String attachment1) {
+		Attachment1 = attachment1;
+	}
+	public String getAttachment2() {
+		return Attachment2;
+	}
+	public void setAttachment2(String attachment2) {
+		Attachment2 = attachment2;
 	}
 	
-	public String getClassification(){
-		return Classification;
-	}
 	
-	public void setClassification(String classification){
-		this.Classification=classification;
-	}
+	
 	
 }
