@@ -40,6 +40,16 @@ public class JobService {
 	}
 	
 	@GET
+	@Path("/application/{appID}/review/{reviewID}")
+	@Produces("application/json")
+	public Response getReview(@PathParam("appID") int appID, @PathParam("reviewID") int reviewID){
+		DatabaseHandler db = new DatabaseHandler();
+		Review r = db.getReview(appID, reviewID);
+		return Response.ok().entity(r).build();
+		
+	}
+	
+	@GET
 	@Path("/{jobID}/application/{appID}")
 	@Produces("application/json")
 	public Response getApplication(@PathParam("jobID") int jobID, @PathParam("appID") int appID){
@@ -126,5 +136,14 @@ public class JobService {
 		
 		return Response.ok(answer).build();
 	}
-
+	
+	@PUT
+	@Path("/application/review")
+	@Consumes("application/json")
+	public Response updateReview(Review urev){
+		DatabaseHandler db = new DatabaseHandler();
+		boolean answer = db.updateReview(urev);
+		
+		return Response.ok(answer).build();
+	}
 }
