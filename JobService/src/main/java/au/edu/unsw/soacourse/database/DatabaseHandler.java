@@ -264,9 +264,20 @@ public class DatabaseHandler {
 				
 				int ucheck = statuslist.indexOf(statustemp);
 				int dbcheck = statuslist.indexOf(statuscheck);
+				
+				// Also need to check if no applications are submitted against a JOB ID
+				
+				String appquery = "SELECT COUNT(*) as total FROM Application WHERE _JobID = ?";
+				PreparedStatement stmtapp = conn.prepareStatement(appquery);
+				stmt1.setInt(1, JobID);
+				ResultSet rsapp = stmtapp.executeQuery();
+				int appcheck=0;
+				if(rsapp.next()){
+					appcheck = rsapp.getInt("total");
+				}
 				// Now need to add a check that allows status to be changed to processing, closed etc only if its not open
 				// also need to compared the current status in the db vs the status being passed/wanting to change to
-				if(total>0  && ucheck >= dbcheck){
+				if(total>0  && ucheck >= dbcheck && appcheck==0){
 					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getCompanyName());
@@ -277,6 +288,13 @@ public class DatabaseHandler {
 					stmt.setString(6, jp.getStatus());
 					stmt.setString(7, jp.getClassification());
 					stmt.setInt(8, JobID);
+					stmt.executeUpdate();
+					return true;
+				}
+				if (total>0 && ucheck>=dbcheck && appcheck>0){
+					String updatequery = "UPDATE Jobs SET Status = ? WHERE _JobID = ?";
+					PreparedStatement stmt = conn.prepareStatement(updatequery);
+					stmt.setString(1, jp.getStatus());
 					stmt.executeUpdate();
 					return true;
 				}
