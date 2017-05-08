@@ -94,7 +94,12 @@ public class JobService {
 	public Response createJobPosting(JobPosting source) throws URISyntaxException{
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createJobPosting(source);
-		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+		if(newid!=-1){
+			return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+		}
+		else{
+			return Response.ok(newid).build();
+		}
 	}
 	
 	@POST

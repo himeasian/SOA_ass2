@@ -161,6 +161,7 @@ public class DatabaseHandler {
 				return checkid; 
 			}
 			else{*/
+			if(jp.getStatus().equals("Created")){
 				String stmtstrinsert = "INSERT INTO Jobs(CompanyName, "
 						+ "SalaryRate, "
 						+ "PositionType, "
@@ -180,7 +181,10 @@ public class DatabaseHandler {
 				stmtinsert.executeUpdate();	
 				
 				return conn.createStatement().executeQuery("SELECT last_insert_rowid();").getInt(1);
-				
+			}
+			else{
+				return -1;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
@@ -230,7 +234,7 @@ public class DatabaseHandler {
 	
 	// NEED TO MODIFY TO HANDLE THAT IF STATUS IS SAY "IN-REVIEW" then it can't be updated to "OPEN"
 	public boolean updateJobPosting(JobPosting jp){
-		
+		String statustemp = jp.getStatus();
 		int JobID = jp.get_jobID();
 		try(Connection conn = connect()){
 			// Need to check if JobPosting exists first.
@@ -241,7 +245,28 @@ public class DatabaseHandler {
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
-				if(total>0){
+				
+				// Also need to check if JOBID status isn't in review or later
+				List<String> statuslist = new ArrayList<String>();
+				statuslist.add("Created");
+				statuslist.add("Open");
+				statuslist.add("In-Review");
+				statuslist.add("Processed");
+				statuslist.add("Sent-Invitations");
+				statuslist.add("Completed");
+				
+				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
+				stmt2.setInt(1,JobID);
+				ResultSet rs2 = stmt2.executeQuery();
+				rs2.next();
+				String statuscheck = rs2.getString("Status");
+				
+				int ucheck = statuslist.indexOf(statustemp);
+				int dbcheck = statuslist.indexOf(statuscheck);
+				// Now need to add a check that allows status to be changed to processing, closed etc only if its not open
+				// also need to compared the current status in the db vs the status being passed/wanting to change to
+				if(total>0  && ucheck >= dbcheck){
 					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getCompanyName());
@@ -403,9 +428,9 @@ public class DatabaseHandler {
 	public int createApplication(Application app){
 		
 		try(Connection conn = connect()){
-			String sqlquery = "INSERT INTO Reviews("
-					+ "_AppID, "
-					+ ", "
+			String sqlquery = "INSERT INTO Applications("
+					+ "_JobID, "
+					+ "CandidatesDetails, "
 					+ "CoverLetter, "
 					+ "Status, "
 					+ "Attachment1, "
@@ -432,6 +457,7 @@ public class DatabaseHandler {
 	public boolean updateApplication(Application app){
 		int JobID = app.get_jobID();
 		int AppID = app.get_appID();
+		
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
 			String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
@@ -443,6 +469,7 @@ public class DatabaseHandler {
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
+				
 				if(total>0){
 					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
@@ -547,6 +574,11 @@ public class DatabaseHandler {
 	public boolean updateReview(Review rev){
 		int ReviewID = rev.get_reviewID();
 		int AppID = rev.get_appID();
+		
+		// Need to check if job posting is still in review, otherwise reject update
+		
+		
+		
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
 			String sqlquery = "SELECT COUNT(*) AS total FROM Reviews WHERE _ReviewID = ? AND _AppID = ?";
@@ -555,6 +587,10 @@ public class DatabaseHandler {
 			stmt1.setInt(2, AppID);
 			
 			ResultSet rs = stmt1.executeQuery();
+			
+			// Need to check if job posting is still in review, otherwise reject update. Need to craft a query that links 3 tables to get 
+			// the correct jobid
+			String jobquery = "SELECT status FROM Jobs WHERE _";
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
