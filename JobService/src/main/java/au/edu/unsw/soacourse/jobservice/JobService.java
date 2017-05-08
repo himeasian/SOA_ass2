@@ -39,6 +39,9 @@ public class JobService {
 		return Response.ok().entity(jp).build();
 	}
 	
+	
+	
+	// Gets a specific review from a specific application for all jobs
 	@GET
 	@Path("/application/{appID}/review/{reviewID}")
 	@Produces("application/json")
@@ -49,6 +52,15 @@ public class JobService {
 		
 	}
 	
+	// Gets all reviews in the table
+	@GET
+	@Path("/application/review")
+	@Produces("application/json")
+	public Response getAllReviews(){
+		DatabaseHandler db = new DatabaseHandler();
+		List<Review> lr = db.getReviews();
+		return Response.ok().entity(lr).build();
+	}
 	@GET
 	@Path("/{jobID}/application/{appID}")
 	@Produces("application/json")
@@ -103,7 +115,7 @@ public class JobService {
 	public Response createReview(Review source) throws URISyntaxException{
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createReview(source);
-		source.set_appID(newid);
+		source.set_reviewID(newid);
 		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
 	}
 	

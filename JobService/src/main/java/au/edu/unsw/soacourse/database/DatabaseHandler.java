@@ -43,9 +43,9 @@ public class DatabaseHandler {
 			+ ");";
 	
 	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + " ("
-			+ "_reviewID PRIMARY KEY,"
-			+ "_appID integer NOT NULL,"
-			+ "ReviewDetails text,"
+			+ "_ReviewID integer PRIMARY KEY,"
+			+ "_AppID integer NOT NULL,"
+			+ "ReviewerDetails text,"
 			+ "Comments text,"
 			+ "Decision text,"
 			+ "FOREIGN KEY(_AppID) REFERENCES Applications(_AppID)"
@@ -66,6 +66,7 @@ public class DatabaseHandler {
                 Statement stmt = conn.createStatement();
                 stmt.execute(CREATE_JOB_POSTINGS_TABLE);
                 stmt.execute(CREATE_APPLICATIONS_TABLE);
+                //stmt.execute("DROP TABLE Reviews");
                 stmt.execute(CREATE_REVIEWS_TABLE);
         } catch (SQLException e) {
 			System.err.println(e.getMessage());
@@ -468,14 +469,14 @@ public class DatabaseHandler {
 	public int createReview(Review rev){
 		try(Connection conn = connect()){
 			String sqlquery = "INSERT INTO Reviews("
-					+ "_JobID, "
-					+ "Reviewdetails, "
+					+ "_AppID, "
+					+ "Reviewerdetails, "
 					+ "Comments, "
 					+ "Decision) "
 					+ "VALUES (?,?,?,?)";
 			PreparedStatement stmt = conn.prepareStatement(sqlquery);
 			stmt.setInt(1, rev.get_appID());
-			stmt.setString(2, rev.getReviewDetails());
+			stmt.setString(2, rev.getReviewerDetails());
 			stmt.setString(3, rev.getComments());
 			stmt.setString(4, rev.getDecision());
 			stmt.executeUpdate();
@@ -492,7 +493,7 @@ public class DatabaseHandler {
 	public Review getReview(int appid, int reviewid){
 		Review review = new Review();
 		try(Connection conn = connect()){
-			String sqlquery = "SELECT * FROM Reviews WHERE _ReviewID = ? AND _AppID = ?;";
+			String sqlquery = "SELECT * FROM Reviews WHERE _ReviewID = ? AND _AppID = ?";
 			PreparedStatement stmt = conn.prepareStatement(sqlquery);
 			stmt.setInt(1, reviewid);
 			stmt.setInt(2, appid);
@@ -500,7 +501,7 @@ public class DatabaseHandler {
 			rs.next();
 			review.set_reviewID(rs.getInt("_ReviewID"));
 			review.set_appID(rs.getInt("_AppID"));
-			review.setReviewDetails(rs.getString("ReviewDetails"));
+			review.setReviewerDetails(rs.getString("ReviewerDetails"));
 			review.setComments(rs.getString("Comments"));
 			review.setDecision(rs.getString("Decision"));
 			
@@ -512,7 +513,7 @@ public class DatabaseHandler {
 		}
 	}
 	
-	public List<Review> getReviews(int appid, int reviewid){
+	public List<Review> getReviews(){
 		List<Review> lrev = new ArrayList<Review>();
 		try(Connection conn = connect()){
 			String sqlquery = "SELECT * FROM Reviews";
@@ -535,7 +536,7 @@ public class DatabaseHandler {
 		//rs.next();
 		rev.set_reviewID(rs.getInt("_ReviewID"));
 		rev.set_appID(rs.getInt("_AppID"));
-		rev.setReviewDetails(rs.getString("ReviewDetails"));
+		rev.setReviewerDetails(rs.getString("ReviewerDetails"));
 		rev.setComments(rs.getString("Comments"));
 		rev.setDecision(rs.getString("Decision"));
 		
@@ -558,9 +559,9 @@ public class DatabaseHandler {
 			if(rs.next()){
 				int total = rs.getInt("total");
 				if(total>0){
-					String updatequery = "UPDATE Applications SET ReviewDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _JobID = ?";
+					String updatequery = "UPDATE Applications SET ReviewerDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
-					stmt.setString(1, rev.getReviewDetails());
+					stmt.setString(1, rev.getReviewerDetails());
 					stmt.setString(2, rev.getComments());
 					stmt.setString(3, rev.getDecision());
 					stmt.executeUpdate();
