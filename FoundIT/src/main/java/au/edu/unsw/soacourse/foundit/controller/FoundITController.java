@@ -1,4 +1,4 @@
-package au.edu.unsw.soacourse.foundit;
+package au.edu.unsw.soacourse.foundit.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
