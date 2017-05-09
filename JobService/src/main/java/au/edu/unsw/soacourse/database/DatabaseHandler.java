@@ -633,6 +633,60 @@ public class DatabaseHandler {
 		}
 	}
 	
+	public List<Review> getReviewsForApplication(int appid){
+		List<Review> revlist = new ArrayList<Review>();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Reviews WHERE _AppID = ?";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, appid);
+			ResultSet rs = stmt.executeQuery();
+			
+			while(rs.next()){
+				Review review = new Review();
+				review.set_reviewID(rs.getInt("_ReviewID"));
+				review.set_appID(rs.getInt("_AppID"));
+				review.setReviewerDetails(rs.getString("ReviewerDetails"));
+				review.setComments(rs.getString("Comments"));
+				review.setDecision(rs.getString("Decision"));
+			
+				revlist.add(review);
+			}
+			return revlist;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Review> getReviewsForReviewer(String reviewer){
+		List<Review> revlist = new ArrayList<Review>();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Reviews WHERE ReviewerDetails = ?";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			//String reviewermod = "'" + reviewer + "'"; 
+			stmt.setString(1, reviewer);
+			//System.out.println(stmt.toString());
+			ResultSet rs = stmt.executeQuery();
+			
+			while(rs.next()){
+				Review review = new Review();
+				review.set_reviewID(rs.getInt("_ReviewID"));
+				review.set_appID(rs.getInt("_AppID"));
+				review.setReviewerDetails(rs.getString("ReviewerDetails"));
+				review.setComments(rs.getString("Comments"));
+				review.setDecision(rs.getString("Decision"));
+			
+				revlist.add(review);
+			}
+			return revlist;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public List<Review> getReviews(){
 		List<Review> lrev = new ArrayList<Review>();
 		try(Connection conn = connect()){

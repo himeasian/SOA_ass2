@@ -52,6 +52,26 @@ public class JobService {
 		
 	}
 	
+	@GET
+	@Path("/application/{appID}/review")
+	@Produces("application/json")
+	public Response getReviewsForApplication(@PathParam("appID") int appID){
+		DatabaseHandler db = new DatabaseHandler();
+		List<Review> r = db.getReviewsForApplication(appID);
+		return Response.ok().entity(r).build();
+		
+	}
+	
+	@GET
+	@Path("/application/review/{reviewer}")
+	@Produces("application/json")
+	public Response getReviewsForReviewer(@PathParam("reviewer") String reviewer){
+		DatabaseHandler db = new DatabaseHandler();
+		List<Review> r = db.getReviewsForReviewer(reviewer);
+		return Response.ok().entity(r).build();
+		
+	}
+	
 	// Gets all reviews in the table
 	@GET
 	@Path("/application/review")
