@@ -64,9 +64,11 @@ public class DatabaseHandler {
 	private void createDb() {	
         try (Connection conn = connect()) {
                 Statement stmt = conn.createStatement();
+                //stmt.execute("DROP TABLE Reviews");
+                //stmt.execute("DROP TABLE Applications");
+                //stmt.execute("DROP TABLE Jobs");
                 stmt.execute(CREATE_JOB_POSTINGS_TABLE);
                 stmt.execute(CREATE_APPLICATIONS_TABLE);
-                //stmt.execute("DROP TABLE Reviews");
                 stmt.execute(CREATE_REVIEWS_TABLE);
         } catch (SQLException e) {
 			System.err.println(e.getMessage());
@@ -267,9 +269,9 @@ public class DatabaseHandler {
 				
 				// Also need to check if no applications are submitted against a JOB ID
 				
-				String appquery = "SELECT COUNT(*) as total FROM Application WHERE _JobID = ?";
+				String appquery = "SELECT COUNT(*) as total FROM Applications WHERE _JobID = ?";
 				PreparedStatement stmtapp = conn.prepareStatement(appquery);
-				stmt1.setInt(1, JobID);
+				stmtapp.setInt(1, JobID);
 				ResultSet rsapp = stmtapp.executeQuery();
 				int appcheck=0;
 				if(rsapp.next()){
@@ -295,6 +297,7 @@ public class DatabaseHandler {
 					String updatequery = "UPDATE Jobs SET Status = ? WHERE _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getStatus());
+					stmt.setInt(2, JobID);
 					stmt.executeUpdate();
 					return true;
 				}
@@ -308,7 +311,7 @@ public class DatabaseHandler {
 		}
 	}
 
-	public List<JobPosting> searchJobPostings(String companyName, String salaryRate, String positionType, String location, String jobDescription, String status, String classification){
+	public List<JobPosting> searchJobPostings(String companyName, float salaryRate, String positionType, String location, String jobDescription, String status, String classification){
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
 		try(Connection conn = connect()){
 			List<String> querylist = new ArrayList<String>();
@@ -316,27 +319,27 @@ public class DatabaseHandler {
 		if(companyName!=null){
 			querylist.add("CompanyName = '" + companyName +"'");
 		}
-		if(salaryRate!=null){
+		if(salaryRate!=0){
 			querylist.add("SalaryRate = " + salaryRate);
 		}
 		if(positionType!=null){
-			querylist.add("PositionType = " + positionType);
+			querylist.add("PositionType = '" + positionType +"'");
 		}
 		if(location!=null){
-			querylist.add("Location = " + location);
+			querylist.add("Location = '" + location +"'");
 		}
 		if(jobDescription!=null){
-			querylist.add("JobDescription = " + jobDescription);
+			querylist.add("JobDescription = '" + jobDescription +"'");
 		}
 		if(status!=null){
-			querylist.add("Status = " + status);
+			querylist.add("Status = " + status +"'");
 		}
 		if(classification!=null){
-			querylist.add("Classification = " + classification);
+			querylist.add("Classification = " + classification +"'");
 		}
 		for(int i = 0; i<querylist.size();i++){
 			if(i>0){
-				sqlquery+=", AND " + querylist.get(i);
+				sqlquery+=" AND " + querylist.get(i);
 			}
 			else{
 				sqlquery+=querylist.get(i);
@@ -443,6 +446,58 @@ public class DatabaseHandler {
 		}
 	}
 	
+	public List<Application> getApplicationForJobPosting(int jobid){
+		List<Application> applist = new ArrayList<Application>();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Applications WHERE _JobID = ?;";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+			stmt.setInt(1, jobid);
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()){
+				Application app = new Application();
+				app.set_appID(rs.getInt("_AppID"));
+				app.set_jobID(rs.getInt("_JobID"));
+				app.setCandidatesDetails(rs.getString("CandidatesDetails"));
+				app.setCoverLetter(rs.getString("CoverLetter"));
+				app.setStatus(rs.getString("Status"));
+				app.setAttachment1(rs.getString("Attachment1"));
+				app.setAttachment2(rs.getString("Attachment2"));
+				applist.add(app);	
+				}
+			return applist;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Application> getAllApplications(){
+		List<Application> applist = new ArrayList<Application>();
+		try(Connection conn = connect()){
+			String sqlquery = "SELECT * FROM Applications;";
+			PreparedStatement stmt = conn.prepareStatement(sqlquery);
+
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()){
+				Application app = new Application();
+				app.set_appID(rs.getInt("_AppID"));
+				app.set_jobID(rs.getInt("_JobID"));
+				app.setCandidatesDetails(rs.getString("CandidatesDetails"));
+				app.setCoverLetter(rs.getString("CoverLetter"));
+				app.setStatus(rs.getString("Status"));
+				app.setAttachment1(rs.getString("Attachment1"));
+				app.setAttachment2(rs.getString("Attachment2"));
+				applist.add(app);
+			}
+			return applist;
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public int createApplication(Application app){
 		
 		try(Connection conn = connect()){
@@ -488,7 +543,24 @@ public class DatabaseHandler {
 			if(rs.next()){
 				int total = rs.getInt("total");
 				
-				if(total>0){
+				List<String> statuslist = new ArrayList<String>();
+				statuslist.add("Created");
+				statuslist.add("Open");
+				statuslist.add("In-Review");
+				statuslist.add("Processed");
+				statuslist.add("Sent-Invitations");
+				statuslist.add("Completed");
+				
+				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
+				stmt2.setInt(1,JobID);
+				ResultSet rs2 = stmt2.executeQuery();
+				rs2.next();
+				String statuscheck = rs2.getString("Status");
+				
+				int dbcheck = statuslist.indexOf(statuscheck);
+				
+				if(total>0 && dbcheck<2){
 					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, app.getCandidatesDetails());
@@ -500,6 +572,9 @@ public class DatabaseHandler {
 					stmt.setInt(7, app.get_jobID());
 					stmt.executeUpdate();
 					return true;
+				}
+				if(total>0 && dbcheck!=1){
+					return false;
 				}
 				return false;
 			}
@@ -594,7 +669,7 @@ public class DatabaseHandler {
 		int AppID = rev.get_appID();
 		
 		// Need to check if job posting is still in review, otherwise reject update
-		
+		//generate query that gets the job id from applications using appid from reviews. then use jobid to get posting from jobs and check status
 		
 		
 		try(Connection conn = connect()){

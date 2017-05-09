@@ -70,12 +70,29 @@ public class JobService {
 		return Response.ok().entity(app).build();
 	}
 	
+	@GET
+	@Path("/application")
+	@Produces("application/json")
+	public Response getAllApplications(){
+		DatabaseHandler db = new DatabaseHandler();
+		List<Application> app = db.getAllApplications();
+		return Response.ok().entity(app).build();
+	}
+	
+	@GET
+	@Path("/{jobID}/application")
+	@Produces("application/json")
+	public Response getApplicationForJobPosting(@PathParam("jobID") int jobID){
+		DatabaseHandler db = new DatabaseHandler();
+		List<Application> app = db.getApplicationForJobPosting(jobID);
+		return Response.ok().entity(app).build();
+	}
 	
 	@GET
 	@Path("/search")
 	@Produces("application/json")
 	public Response searchJobPostings(@QueryParam("companyName") String companyName, 
-			@QueryParam("salaryRate") String salaryRate,
+			@QueryParam("salaryRate") float salaryRate,
 			@QueryParam("positionType") String positionType,
 			@QueryParam("location") String location,
 			@QueryParam("jobDescription") String jobDescription, 
@@ -94,6 +111,7 @@ public class JobService {
 	public Response createJobPosting(JobPosting source) throws URISyntaxException{
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createJobPosting(source);
+		source.set_jobID(newid);
 		if(newid!=-1){
 			return Response.created(new URI("/jobs/" + newid)).entity(source).build();
 		}
@@ -126,7 +144,6 @@ public class JobService {
 	
 	@DELETE
 	@Path("/{jobID}")
-	@Consumes("application/json")
 	public Response deleteJobPosting(@PathParam("jobID") int jobID){
 		DatabaseHandler db = new DatabaseHandler();
 		boolean answer = db.deleteJobPosting(jobID);
