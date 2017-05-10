@@ -148,7 +148,7 @@ public class JobService {
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createApplication(source);
 		source.set_appID(newid);
-		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+		return Response.created(new URI("/jobs/" + source.get_jobID() + "/application/" + newid)).entity(source).build();
 	}
 	
 	@POST
@@ -159,7 +159,7 @@ public class JobService {
 		DatabaseHandler db = new DatabaseHandler();
 		int newid = db.createReview(source);
 		source.set_reviewID(newid);
-		return Response.created(new URI("/jobs/" + newid)).entity(source).build();
+		return Response.created(new URI("/jobs/application/"+ source.get_appID() + "/review/" + newid)).entity(source).build();
 	}
 	
 	@DELETE
