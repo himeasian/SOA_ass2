@@ -762,11 +762,13 @@ public class DatabaseHandler {
 			if(rs.next()){
 				int total = rs.getInt("total");
 				if(total>0 && dbcheck<=2){
-					String updatequery = "UPDATE Applications SET ReviewerDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _JobID = ?";
+					String updatequery = "UPDATE Reviews SET ReviewerDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _ReviewID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, rev.getReviewerDetails());
 					stmt.setString(2, rev.getComments());
 					stmt.setString(3, rev.getDecision());
+					stmt.setInt(4, AppID);
+					stmt.setInt(5, ReviewID);
 					stmt.executeUpdate();
 					return true;
 				}
