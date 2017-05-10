@@ -721,6 +721,13 @@ public class DatabaseHandler {
 	public boolean updateReview(Review rev){
 		int ReviewID = rev.get_reviewID();
 		int AppID = rev.get_appID();
+		List<String> statuslist = new ArrayList<String>();
+		statuslist.add("Created");
+		statuslist.add("Open");
+		statuslist.add("In-Review");
+		statuslist.add("Processed");
+		statuslist.add("Sent-Invitations");
+		statuslist.add("Completed");
 		
 		// Need to check if job posting is still in review, otherwise reject update
 		//generate query that gets the job id from applications using appid from reviews. then use jobid to get posting from jobs and check status
@@ -737,11 +744,24 @@ public class DatabaseHandler {
 			
 			// Need to check if job posting is still in review, otherwise reject update. Need to craft a query that links 3 tables to get 
 			// the correct jobid
-			String jobquery = "SELECT status FROM Jobs WHERE _";
+			String appquery = "SELECT * FROM Applications WHERE _AppID = ?";
+			PreparedStatement pstmt = conn.prepareStatement(appquery);
+			pstmt.setInt(1, AppID);
+			ResultSet rssearch = pstmt.executeQuery();
+			rssearch.next();
+			int jobid = rssearch.getInt("_JobID");
+			
+			String jobquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+			PreparedStatement jstmt =conn.prepareStatement(jobquery);
+			jstmt.setInt(1, jobid);
+			ResultSet rsjob = jstmt.executeQuery();
+			rsjob.next();
+			String jobstatus = rsjob.getString("Status");
+			int dbcheck = statuslist.indexOf(jobstatus);
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
-				if(total>0){
+				if(total>0 && dbcheck<=2){
 					String updatequery = "UPDATE Applications SET ReviewerDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, rev.getReviewerDetails());
