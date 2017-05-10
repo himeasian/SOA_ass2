@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import au.edu.unsw.soacourse.model.*;
@@ -50,6 +51,10 @@ public class DatabaseHandler {
 			+ "Decision text,"
 			+ "FOREIGN KEY(_AppID) REFERENCES Applications(_AppID)"
 			+ ");";
+	
+	private static final String[] statusarray = {"Created","Open","In-Review", "Processed", "Sent-Invitations","Completed"};
+	private static final List<String> statuslist = Arrays.asList(statusarray);
+	
 	
 	/**
 	 * Creates a database upon loading of class.
@@ -106,7 +111,7 @@ public class DatabaseHandler {
 		jp.setLocation(rs.getString("Location"));
 		jp.setJobDescription(rs.getString("JobDescription"));
 		jp.setStatus(rs.getString("Status"));
-		jp.setClassification(rs.getString("Status"));
+		jp.setClassification(rs.getString("Classification"));
 		
 		return jp;
 	}
@@ -178,7 +183,8 @@ public class DatabaseHandler {
 				stmtinsert.setString(3, jp.getPositionType());
 				stmtinsert.setString(4, jp.getLocation());
 				stmtinsert.setString(5, jp.getJobDescription());
-				stmtinsert.setString(6, jp.getStatus());
+				//stmtinsert.setString(6, jp.getStatus());
+				stmtinsert.setString(6, "Created");
 				stmtinsert.setString(7, jp.getClassification());
 				stmtinsert.executeUpdate();	
 				
@@ -234,28 +240,21 @@ public class DatabaseHandler {
 		}
 	}
 	
-	// NEED TO MODIFY TO HANDLE THAT IF STATUS IS SAY "IN-REVIEW" then it can't be updated to "OPEN"
-	public boolean updateJobPosting(JobPosting jp){
+	
+	public int updateJobPosting(JobPosting jp){
 		String statustemp = jp.getStatus();
 		int JobID = jp.get_jobID();
 		try(Connection conn = connect()){
-			// Need to check if JobPosting exists first.
-			String sqlquery = "SELECT COUNT(*) AS total FROM Jobs WHERE _JobID = ?";
-			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
-			stmt1.setInt(1, JobID);
-			ResultSet rs = stmt1.executeQuery();
 			
-			if(rs.next()){
-				int total = rs.getInt("total");
 				
 				// Also need to check if JOBID status isn't in review or later
-				List<String> statuslist = new ArrayList<String>();
+				/*List<String> statuslist = new ArrayList<String>();
 				statuslist.add("Created");
 				statuslist.add("Open");
 				statuslist.add("In-Review");
 				statuslist.add("Processed");
 				statuslist.add("Sent-Invitations");
-				statuslist.add("Completed");
+				statuslist.add("Completed");*/
 				
 				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
 				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
@@ -279,7 +278,7 @@ public class DatabaseHandler {
 				}
 				// Now need to add a check that allows status to be changed to processing, closed etc only if its not open
 				// also need to compared the current status in the db vs the status being passed/wanting to change to
-				if(total>0  && ucheck >= dbcheck && appcheck==0){
+				if(ucheck >= dbcheck && dbcheck<2 && appcheck==0){
 					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getCompanyName());
@@ -291,23 +290,22 @@ public class DatabaseHandler {
 					stmt.setString(7, jp.getClassification());
 					stmt.setInt(8, JobID);
 					stmt.executeUpdate();
-					return true;
+					return 1;
 				}
-				if (total>0 && ucheck>=dbcheck && appcheck>0){
+				if (ucheck>=dbcheck && appcheck>0){
 					String updatequery = "UPDATE Jobs SET Status = ? WHERE _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getStatus());
 					stmt.setInt(2, JobID);
 					stmt.executeUpdate();
-					return true;
+					return 2;
 				}
-				return false;
-			}
-			return false;
+				
+			return 0;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 	}
 
@@ -527,13 +525,13 @@ public class DatabaseHandler {
 		}
 	}
 	
-	public boolean updateApplication(Application app){
+	public int updateApplication(Application app){
 		int JobID = app.get_jobID();
 		int AppID = app.get_appID();
 		
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
-			String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
+			/*String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
 			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
 			stmt1.setInt(1, AppID);
 			stmt1.setInt(2, JobID);
@@ -550,7 +548,7 @@ public class DatabaseHandler {
 				statuslist.add("Processed");
 				statuslist.add("Sent-Invitations");
 				statuslist.add("Completed");
-				
+				*/
 				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
 				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
 				stmt2.setInt(1,JobID);
@@ -560,7 +558,7 @@ public class DatabaseHandler {
 				
 				int dbcheck = statuslist.indexOf(statuscheck);
 				
-				if(total>0 && dbcheck<2){
+				if(dbcheck<2){
 					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, app.getCandidatesDetails());
@@ -571,18 +569,15 @@ public class DatabaseHandler {
 					stmt.setInt(6, app.get_appID());
 					stmt.setInt(7, app.get_jobID());
 					stmt.executeUpdate();
-					return true;
+					return 1;
 				}
-				if(total>0 && dbcheck!=1){
-					return false;
-				}
-				return false;
-			}
-			return false;
+				
+				return 0;
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 	}
 
@@ -718,16 +713,16 @@ public class DatabaseHandler {
 		return rev;
 	}
 
-	public boolean updateReview(Review rev){
+	public int updateReview(Review rev){
 		int ReviewID = rev.get_reviewID();
 		int AppID = rev.get_appID();
-		List<String> statuslist = new ArrayList<String>();
+		/*List<String> statuslist = new ArrayList<String>();
 		statuslist.add("Created");
 		statuslist.add("Open");
 		statuslist.add("In-Review");
 		statuslist.add("Processed");
 		statuslist.add("Sent-Invitations");
-		statuslist.add("Completed");
+		statuslist.add("Completed");*/
 		
 		// Need to check if job posting is still in review, otherwise reject update
 		//generate query that gets the job id from applications using appid from reviews. then use jobid to get posting from jobs and check status
@@ -735,12 +730,13 @@ public class DatabaseHandler {
 		
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
-			String sqlquery = "SELECT COUNT(*) AS total FROM Reviews WHERE _ReviewID = ? AND _AppID = ?";
+			/*String sqlquery = "SELECT COUNT(*) AS total FROM Reviews WHERE _ReviewID = ? AND _AppID = ?";
 			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
 			stmt1.setInt(1, ReviewID);
 			stmt1.setInt(2, AppID);
 			
 			ResultSet rs = stmt1.executeQuery();
+			*/
 			
 			// Need to check if job posting is still in review, otherwise reject update. Need to craft a query that links 3 tables to get 
 			// the correct jobid
@@ -759,9 +755,8 @@ public class DatabaseHandler {
 			String jobstatus = rsjob.getString("Status");
 			int dbcheck = statuslist.indexOf(jobstatus);
 			
-			if(rs.next()){
-				int total = rs.getInt("total");
-				if(total>0 && dbcheck<=2){
+			
+				if(dbcheck<2){
 					String updatequery = "UPDATE Reviews SET ReviewerDetails = ?, Comments = ?, Decision = ? WHERE _AppID = ? AND _ReviewID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, rev.getReviewerDetails());
@@ -770,15 +765,13 @@ public class DatabaseHandler {
 					stmt.setInt(4, AppID);
 					stmt.setInt(5, ReviewID);
 					stmt.executeUpdate();
-					return true;
+					return 1;
 				}
-				return false;
-			}
-			return false;
+			return 0;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 	}
 }

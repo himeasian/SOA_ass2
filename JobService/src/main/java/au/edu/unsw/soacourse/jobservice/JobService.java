@@ -176,9 +176,15 @@ public class JobService {
 	@Consumes("application/json")
 	public Response updateJobPosting(JobPosting ujp){
 		DatabaseHandler db = new DatabaseHandler();
-		boolean answer = db.updateJobPosting(ujp);
+		if(db.getJobPosting(ujp.get_jobID())==null){
+			return Response.status(403).build();
+		}
+		int answer = db.updateJobPosting(ujp);
 		
-		return Response.ok(answer).build();
+		if(answer==0){
+			return Response.notModified().build();
+		}
+		return Response.accepted().build();
 	}
 	
 	@PUT
@@ -186,8 +192,14 @@ public class JobService {
 	@Consumes("application/json")
 	public Response updateApplication(Application uapp){
 		DatabaseHandler db = new DatabaseHandler();
-		boolean answer = db.updateApplication(uapp);
 		
+		if(db.getApplication(uapp.get_jobID(),uapp.get_appID())==null){
+			return Response.status(403).build();
+		}
+		int answer = db.updateApplication(uapp);
+		if(answer==0){
+			return Response.notModified().build();
+		}
 		return Response.ok(answer).build();
 	}
 	
@@ -196,8 +208,14 @@ public class JobService {
 	@Consumes("application/json")
 	public Response updateReview(Review urev){
 		DatabaseHandler db = new DatabaseHandler();
-		boolean answer = db.updateReview(urev);
+		if(db.getReview(urev.get_appID(), urev.get_reviewID())==null){
+			return Response.status(403).build();
+		}
+		int answer = db.updateReview(urev);
 		
+		if(answer==0){
+			return Response.notModified().build();
+		}
 		return Response.ok(answer).build();
 	}
 }
