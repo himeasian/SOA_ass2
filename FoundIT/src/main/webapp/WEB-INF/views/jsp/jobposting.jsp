@@ -9,7 +9,7 @@
 </head>
 <body>
 Create Job Posting
-<form id="createJobPostingForm" modelAttribute="JobPosting" action="createJobPosting" method="post" class="form-horizontal">
+<form:form id="createJobPostingForm" modelAttribute="JobPosting" action="createJobPosting" method="post" class="form-horizontal">
   <div class="form-group">
     <label class="control-label col-sm-2" for="companyName">Company Name</label>
     <div class="col-sm-10">
@@ -46,7 +46,7 @@ Create Job Posting
       <button type="submit" href="createJobPosting" class="btn btn-default">Submit</button>
     </div>
   </div>
-</form>
+</form:form>
 
 </body>
 </html>

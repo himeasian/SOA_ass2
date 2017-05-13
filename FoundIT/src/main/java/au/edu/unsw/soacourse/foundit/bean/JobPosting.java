@@ -1,6 +1,7 @@
 package au.edu.unsw.soacourse.foundit.bean;
 
 public class JobPosting {
+	private int _JobID;
 	private String CompanyName;
 	private float SalaryRate;
 	private String PositionType;
@@ -9,6 +10,12 @@ public class JobPosting {
 	private String Status;
 	private String Classification;
 	
+	public int get_JobID() {
+		return _JobID;
+	}
+	public void set_JobID(int _JobID) {
+		this._JobID = _JobID;
+	}
 	public String getCompanyName() {
 		return CompanyName;
 	}
@@ -51,4 +58,6 @@ public class JobPosting {
 	public void setClassification(String classification) {
 		Classification = classification;
 	}
+	
+	
 }
