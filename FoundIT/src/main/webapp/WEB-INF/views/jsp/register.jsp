@@ -4,59 +4,74 @@
 		<div class="row">
 			<h1>Register An Account</h1>
 		</div>
-		<br/>
+		<br />
 		<div class="container">
-			<form:form id="registerForm" modelAttribute="register" action="register" method="post">
-				<div class="form-group row">
-					<label for="inputGName" class="col-sm-2 col-form-label">First Name</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputGName"
-							placeholder="First Name" required>
-					</div>
+			<c:if test="${not empty errmsg}">
+				<div class="row">
+					<header style="color: red;"><h6>${errmsg}</h6></header>
 				</div>
-				<div class="form-group row">
-					<label for="inputSName" class="col-sm-2 col-form-label">Surname</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputSName"
-							placeholder="Surname" required>
+			</c:if>
+			<div class="row">
+				<form:form modelAttribute="register" action="register" method="post">
+					<div class="form-group row">
+						<form:label path="fname" class="col-sm-2 col-form-label">First Name</form:label>
+						<div class="col-sm-10">
+							<form:input path="fname" type="text" class="form-control"
+								placeholder="First Name" required="required" />
+						</div>
 					</div>
-				</div>
-				<div class="form-group row">
-					<label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-					<div class="col-sm-10">
-						<input type="email" class="form-control" id="inputEmail"
-							placeholder="Email" required>
+					<div class="form-group row">
+						<form:label path="lname" class="col-sm-2 col-form-label">Surname</form:label>
+						<div class="col-sm-10">
+							<form:input path="lname" type="text" class="form-control"
+								placeholder="Surname" required="required" />
+						</div>
 					</div>
-				</div>
-				<div class="form-group row">
-					<label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-					<div class="col-sm-10">
-						<input type="password" class="form-control" id="inputPassword"
-							placeholder="Password" required>
+					<div class="form-group row">
+						<form:label path="email" class="col-sm-2 col-form-label">Email</form:label>
+						<div class="col-sm-10">
+							<form:input path="email" type="email" class="form-control"
+								placeholder="Email" required="required" />
+						</div>
 					</div>
-				</div>
-				<div class="form-group row">
-					<label for="inputRole" class="col-sm-2 col-form-label">Role</label>
-					<div class="col-sm-10 pull-right">
-						<select class="form-control" id="inputRole" required>
-							<option value="applicant">Applicant</option>
-							<option value="manager">Manager</option>
-						</select>
+					<div class="form-group row">
+						<form:label path="password" class="col-sm-2 col-form-label">Password</form:label>
+						<div class="col-sm-10">
+							<form:input path="password" type="password" class="form-control"
+								placeholder="Password" required="required" />
+						</div>
 					</div>
-				</div>
-				<div class="form-group row">
-					<label for="inputCompany" class="col-sm-2 col-form-label">Company</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputCompany"
-							placeholder="Company">
+					<div class="form-group row">
+						<form:label path="confirmPassword" class="col-sm-2 col-form-label">Confirm Password</form:label>
+						<div class="col-sm-10">
+							<form:input path="confirmPassword" type="password" class="form-control"
+								placeholder="Password" required="required" />
+						</div>
 					</div>
-				</div>				
-				<div class="form-group row">
-					<div class="offset-sm-2 col-sm-10">
-						<button type="submit" class="btn btn-default">Register</button>
+					<div class="form-group row">
+						<form:label path="role" for="inputRole"
+							class="col-sm-2 col-form-label">Role</form:label>
+						<div class="col-sm-10 pull-right">
+							<form:select path="role" class="form-control" required="required">
+								<option value="applicant" selected="selected">Applicant</option>
+								<option value="manager">Manager</option>
+							</form:select>
+						</div>
 					</div>
-				</div>	
-			</form:form>
+					<div class="form-group row">
+						<form:label path="company" class="col-sm-2 col-form-label">Company</form:label>
+						<div class="col-sm-10">
+							<form:input path="company" type="text" class="form-control"
+								placeholder="Company" />
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="offset-sm-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Register</button>
+						</div>
+					</div>
+				</form:form>
+			</div>
 		</div>
 		<!-- container -->
 	</div>
