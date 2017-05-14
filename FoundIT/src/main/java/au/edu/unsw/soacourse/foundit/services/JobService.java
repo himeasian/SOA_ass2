@@ -1,6 +1,12 @@
 package au.edu.unsw.soacourse.foundit.services;
 
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
 import org.apache.cxf.jaxrs.client.WebClient;
+
+import au.edu.unsw.soacourse.foundit.model.JobPosting;
 
 /**
  * Job service helper
@@ -8,6 +14,13 @@ import org.apache.cxf.jaxrs.client.WebClient;
  *
  */
 public class JobService {
+	
+	public List<JobPosting> getJobPosts(JobPosting j) {
+		jobClient.reset();
+		jobClient.path("/jobs/search").accept(MediaType.APPLICATION_JSON);
+		
+		return null;
+	}
 	
 	/**
 	 * Constructor that initialises an interaction with job service at base url

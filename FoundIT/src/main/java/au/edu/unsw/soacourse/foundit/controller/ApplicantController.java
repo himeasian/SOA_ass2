@@ -43,6 +43,8 @@ public class ApplicantController {
 		if (result.hasErrors())
 			return new ModelAndView("errors");
 		
+		JobService js = new JobService();
+		
 		return new ModelAndView("applicant/results");
 	}
 	
