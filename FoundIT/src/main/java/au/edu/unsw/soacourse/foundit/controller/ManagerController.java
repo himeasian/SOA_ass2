@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import au.edu.unsw.soacourse.foundit.model.*;
@@ -102,9 +104,28 @@ public class ManagerController {
 	}
 	
 	@RequestMapping("/hiringteam")
-	public String hiringTeamAction() {
-		
+	public ModelAndView hiringTeamAction(@RequestParam(value="jobbutton") int jobID) {
+		return new ModelAndView("hiringteam", "jobID", jobID);
+	}
+	
+	@RequestMapping("/hiringteam/assign")
+	public String assignhiringTeamAction(@RequestParam(value="assignteam") int jobID) {
+		// YOU ARE UP TO HERE NOW IN THE WORK!!!!!!!!!!!!!
 		return "hiringteam";
+	}
+	
+	@RequestMapping("/archiving")
+	public String archiveJobPosting() {
+		return "archiving";
+	}
+	
+	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
+	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp){
+		// Need to access jobservice and perform delete on jobid
+		int jobid = jp.get_JobID();
+		boolean result = false;
+		//get boolean result from jobservice;
+		return new ModelAndView("archiving", "result", result);
 	}
 	
 }

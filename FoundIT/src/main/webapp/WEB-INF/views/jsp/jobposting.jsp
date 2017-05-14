@@ -9,7 +9,7 @@
 </head>
 <body>
 Create Job Posting
-<form:form id="createJobPostingForm" modelAttribute="JobPosting" action="createJobPosting" method="post" class="form-horizontal">
+<form:form id="createJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/createJobPosting" method="post" class="form-horizontal">
   <div class="form-group">
     <label class="control-label col-sm-2" for="companyName">Company Name</label>
     <div class="col-sm-10">

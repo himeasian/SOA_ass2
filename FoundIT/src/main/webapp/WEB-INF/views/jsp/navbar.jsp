@@ -15,10 +15,10 @@
     </div>
     <ul class="nav navbar-nav">
       
-      <li><a href="/FoundIT/manager/jobposting">JobPostings</a></li>
-      <li><a href="/FoundIT/manager/application">Applications</a></li>
-      <li><a href="/FoundIT/manager/review">Reviews</a></li>
-      <li><a href="/FoundIT/manager/hiringteam">Hiring Teams</a>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/jobposting">JobPostings</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/application">Applications</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/review">Reviews</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/hiringteam">Hiring Teams</a>
     </ul>
   </div>
 </div>

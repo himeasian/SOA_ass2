@@ -41,6 +41,11 @@
 		        <td><c:out value="${jobposting.status}"/></td>
 		    </tr>
 		    <tr>
+		    	
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/hiringteam" method="post">
+		    		<button name="jobbutton" value='${jobposting._JobID}' >Add reviewers</button>
+		    	</form:form>
+		    	</td>
   	</table>
 </div>
 

@@ -32,7 +32,7 @@
 				<td>${row.location}</td>
 				<td>${row.jobDescription}</td>
 				<td>${row.status}</td>
-				<td ><a href="manager/detailedjob/${row._JobID}">Link</td>
+				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._JobID}">Link</td>
 			</tr>
 		</c:forEach>
       
