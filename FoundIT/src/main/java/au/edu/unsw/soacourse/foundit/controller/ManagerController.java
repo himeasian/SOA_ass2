@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,6 +70,16 @@ public class ManagerController {
 		return new ModelAndView("detailedjob", "jobposting", jp);
 	}
 	
+	@RequestMapping("/jobposting")
+	public String jobPostingAction() {
+		return "jobposting";
+	}
+	
+	@RequestMapping("/createJobPosting")
+	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp){
+		return "success";	
+	}
+	
 	@RequestMapping("/detailedapplication/{appID}") 
 	public ModelAndView detailedApplication(@PathVariable("appID") int appID){
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -88,6 +99,12 @@ public class ManagerController {
 		Review rev = new Review();
 		rev.set_reviewID(reviewID);
 		return new ModelAndView("detailedreview", "review", rev);
+	}
+	
+	@RequestMapping("/hiringteam")
+	public String hiringTeamAction() {
+		
+		return "hiringteam";
 	}
 	
 }

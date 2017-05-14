@@ -62,15 +62,7 @@ public class FoundITController {
 //		return model;
 //	}
 	
-	@RequestMapping("/jobposting")
-	public String jobPostingAction() {
-		return "jobposting";
-	}
 	
-	@RequestMapping("/createJobPosting")
-	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp){
-		return "success";	
-	}
 	
 	@RequestMapping("/application")
 	public String applicationAction() {

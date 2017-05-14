@@ -11,13 +11,14 @@
 <div class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">WebSiteName</a>
+      <a class="navbar-brand" href="/FoundIT/manager">FoundIT</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="/FoundIT/manager">Home</a></li>
-      <li><a href="/FoundIT/manager/jobposting">JobPosting</a></li>
-      <li><a href="/FoundIT/manager/application">Application</a></li>
+      
+      <li><a href="/FoundIT/manager/jobposting">JobPostings</a></li>
+      <li><a href="/FoundIT/manager/application">Applications</a></li>
       <li><a href="/FoundIT/manager/review">Reviews</a></li>
+      <li><a href="/FoundIT/manager/hiringteam">Hiring Teams</a>
     </ul>
   </div>
 </div>

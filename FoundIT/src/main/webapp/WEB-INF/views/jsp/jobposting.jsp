@@ -13,31 +13,31 @@ Create Job Posting
   <div class="form-group">
     <label class="control-label col-sm-2" for="companyName">Company Name</label>
     <div class="col-sm-10">
-      <input type="companyName" class="form-control" id="companyName" placeholder="Enter company name.">
+      <input type="text" class="form-control" id="companyName" placeholder="Enter company name.">
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="salaryRate">Salary Rate:</label>
     <div class="col-sm-10"> 
-      <input type="password" class="form-control" id="salaryRate" placeholder="Enter salary rate.">
+      <input type="number" class="form-control" id="salaryRate" placeholder="Enter salary rate.">
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="positionType">Position Type:</label>
     <div class="col-sm-10">
-      <input type="positionType" class="form-control" id="positionType" placeholder="Enter position type.">
+      <input type="text" class="form-control" id="positionType" placeholder="Enter position type.">
     </div>
   </div>
     <div class="form-group">
     <label class="control-label col-sm-2" for="location">Location:</label>
     <div class="col-sm-10">
-      <input type="location" class="form-control" id="location" placeholder="Enter location.">
+      <input type="text" class="form-control" id="location" placeholder="Enter location.">
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="jobDescription">Job Description:</label>
     <div class="col-sm-10">
-      <input type="jobDescription" class="form-control" id="jobDescription" placeholder="Enter job description.">
+      <input type="text" class="form-control" id="jobDescription" placeholder="Enter job description.">
     </div>
   </div>
 
@@ -47,6 +47,10 @@ Create Job Posting
     </div>
   </div>
 </form:form>
+
+Delete/Archive Posting
+
+
 
 </body>
 </html>
