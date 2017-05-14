@@ -15,6 +15,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
 			<version>3.1.11</version>
@@ -30,7 +35,7 @@
 			<artifactId>jstl</artifactId>
 			<version>${jstl.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
@@ -75,7 +80,7 @@
 					<wtpContextName>spring3</wtpContextName>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 

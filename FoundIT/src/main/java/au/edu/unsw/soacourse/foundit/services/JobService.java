@@ -1,6 +1,9 @@
 package au.edu.unsw.soacourse.foundit.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
 
@@ -18,6 +21,16 @@ public class JobService {
 	public List<JobPosting> getJobPosts(JobPosting j) {
 		jobClient.reset();
 		jobClient.path("/jobs/search").accept(MediaType.APPLICATION_JSON);
+		Map<String, Object> params = new HashMap<>();
+		params.put("salaryRate", j.getSalaryRate());
+		params.put("jobDescription", j.getJobDescription());
+		params.put("location", j.getLocation());
+		
+		for (Entry<String, Object> entry : params.entrySet()) {
+			jobClient.query(entry.getKey(), entry.getValue());
+		}
+		
+		
 		
 		return null;
 	}

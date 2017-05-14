@@ -8,7 +8,7 @@
 	<br />
 	<div class="row">
 		<div class="container">
-			<form:form id="loginForm" modelAttribute="${pageContext.servletContext.contextPath}/login" action="login"
+			<form:form id="loginForm" modelAttribute="login" action="${pageContext.servletContext.contextPath}/login"
 				method="post">
 				<div class="form-group row">
 					<form:label path="email" class="col-sm-2 col-form-label">Email</form:label>
