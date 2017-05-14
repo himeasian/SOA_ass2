@@ -55,28 +55,7 @@ public class FoundITController {
 	public String logoutAction(HttpServletRequest request) {
 		request.getSession().invalidate();
 		return "default/loggedout";
-	}
-	
-	@RequestMapping("/jobposting")
-	public String jobPostingAction() {
-		return "jobposting";
-	}
-	
-	@RequestMapping("/createJobPosting")
-	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp){
-		return "success";	
-	}
-	
-	@RequestMapping("/application")
-	public String applicationAction() {
-		return "application";
-	}
-	
-	@RequestMapping("/review")
-	public String reviewAction() {
-		return "review";
-	}
-	
+	}	
 
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public ModelAndView registerPageAction() {

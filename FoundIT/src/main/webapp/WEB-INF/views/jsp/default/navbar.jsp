@@ -1,4 +1,4 @@
-<%@ include file="default/head.jsp"%>
+<%@ include file="head.jsp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -11,13 +11,14 @@
 <div class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">WebSiteName</a>
+      <a class="navbar-brand" href="/FoundIT/manager">FoundIT</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Home</a></li>
-      <li><a href="jobposting">JobPosting</a></li>
-      <li><a href="application">Application</a></li>
-      <li><a href="review">Reviews</a></li>
+      
+      <li><a href="${pageContext.servletContext.contextPath}/manager/jobposting">JobPostings</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/application">Applications</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/review">Reviews</a></li>
+      <li><a href="${pageContext.servletContext.contextPath}/manager/hiringteam">Hiring Teams</a>
     </ul>
   </div>
 </div>
