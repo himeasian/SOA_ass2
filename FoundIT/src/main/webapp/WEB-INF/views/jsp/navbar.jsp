@@ -14,10 +14,10 @@
       <a class="navbar-brand" href="#">WebSiteName</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Home</a></li>
-      <li><a href="jobposting">JobPosting</a></li>
-      <li><a href="application">Application</a></li>
-      <li><a href="review">Reviews</a></li>
+      <li class="active"><a href="/FoundIT/manager">Home</a></li>
+      <li><a href="/FoundIT/manager/jobposting">JobPosting</a></li>
+      <li><a href="/FoundIT/manager/application">Application</a></li>
+      <li><a href="/FoundIT/manager/review">Reviews</a></li>
     </ul>
   </div>
 </div>

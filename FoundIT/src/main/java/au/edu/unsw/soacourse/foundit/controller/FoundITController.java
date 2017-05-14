@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import au.edu.unsw.soacourse.foundit.bean.JobPosting;
 import au.edu.unsw.soacourse.foundit.bean.Login;
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
+import au.edu.unsw.soacourse.foundit.model.JobPosting;
 import au.edu.unsw.soacourse.foundit.model.User;
 
 @Controller
