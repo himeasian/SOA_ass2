@@ -315,25 +315,25 @@ public class DatabaseHandler {
 			List<String> querylist = new ArrayList<String>();
 			String sqlquery = "SELECT * FROM Jobs WHERE ";
 		if(companyName!=null){
-			querylist.add("CompanyName = '" + companyName +"'");
+			querylist.add("CompanyName like '%" + companyName +"'%");
 		}
 		if(salaryRate!=0){
-			querylist.add("SalaryRate = " + salaryRate);
+			querylist.add("SalaryRate >= " + salaryRate);
 		}
 		if(positionType!=null){
-			querylist.add("PositionType = '" + positionType +"'");
+			querylist.add("PositionType like '%" + positionType +"%'");
 		}
 		if(location!=null){
-			querylist.add("Location = '" + location +"'");
+			querylist.add("Location like '%" + location +"%'");
 		}
 		if(jobDescription!=null){
-			querylist.add("JobDescription = '" + jobDescription +"'");
+			querylist.add("JobDescription like '%" + jobDescription +"%'");
 		}
 		if(status!=null){
 			querylist.add("Status = " + status +"'");
 		}
 		if(classification!=null){
-			querylist.add("Classification = " + classification +"'");
+			querylist.add("Classification like '%" + classification +"%'");
 		}
 		for(int i = 0; i<querylist.size();i++){
 			if(i>0){

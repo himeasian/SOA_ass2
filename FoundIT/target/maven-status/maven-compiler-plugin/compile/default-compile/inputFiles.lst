@@ -1,4 +1,9 @@
 /home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/controller/FoundITController.java
 /home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/bean/Login.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/database/DatabaseHandler.java
 /home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/bean/Register.java
-/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/com/mkyong/web/controller/HelloController.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/model/JobPosting.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/controller/ManagerController.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/model/User.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/controller/ApplicantController.java
+/home/trungisme/Documents/unsw/cs9322/SOA_ass2/FoundIT/src/main/java/au/edu/unsw/soacourse/foundit/controller/ReviewerController.java
