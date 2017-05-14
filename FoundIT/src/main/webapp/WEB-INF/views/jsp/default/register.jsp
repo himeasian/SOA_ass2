@@ -6,13 +6,8 @@
 		</div>
 		<br />
 		<div class="container">
-			<c:if test="${not empty errmsg}">
-				<div class="row">
-					<header style="color: red;"><h6>${errmsg}</h6></header>
-				</div>
-			</c:if>
 			<div class="row">
-				<form:form modelAttribute="register" action="register" method="post">
+				<form:form modelAttribute="register" action="${pageContext.servletContext.contextPath}/register" method="post">
 					<div class="form-group row">
 						<form:label path="fname" class="col-sm-2 col-form-label">First Name</form:label>
 						<div class="col-sm-10">
@@ -69,6 +64,11 @@
 						<div class="offset-sm-2 col-sm-10">
 							<button type="submit" class="btn btn-default">Register</button>
 						</div>
+						<c:if test="${not empty errmsg}">
+							<div class="row">
+								<header style="color: red;"><h6>${errmsg}</h6></header>
+							</div>
+						</c:if>
 					</div>
 				</form:form>
 			</div>

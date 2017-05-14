@@ -1,4 +1,4 @@
-package au.edu.unsw.soacourse.foundit.bean;
+package au.edu.unsw.soacourse.foundit.model;
 
 public class JobPosting {
 	private int _JobID;

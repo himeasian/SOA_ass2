@@ -8,7 +8,7 @@
 	<br />
 	<div class="row">
 		<div class="container">
-			<form:form id="loginForm" modelAttribute="login" action="login"
+			<form:form id="loginForm" modelAttribute="${pageContext.servletContext.contextPath}/login" action="login"
 				method="post">
 				<div class="form-group row">
 					<form:label path="email" class="col-sm-2 col-form-label">Email</form:label>
@@ -27,7 +27,7 @@
 				<div class="form-group row">
 					<div class="offset-sm-2 col-sm-10">
 						<button type="submit" class="btn btn-default">Log in</button>
-						<a class="btn btn-default" href="register" role="button">Sign
+						<a class="btn btn-default" href="${pageContext.servletContext.contextPath}/register" role="button">Sign
 							up</a>
 					</div>
 				</div>

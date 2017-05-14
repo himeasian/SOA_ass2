@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import au.edu.unsw.soacourse.foundit.bean.JobPosting;
+import au.edu.unsw.soacourse.foundit.model.JobPosting;
 
 @Controller
 @RequestMapping("manager")
