@@ -94,6 +94,11 @@ public class ManagerController {
 		return new ModelAndView("manager/jobposting", "JobPosting", new JobPosting());
 	}
 	
+	@RequestMapping("/jobupdate")
+	public ModelAndView jobUpdateAction() {
+		return new ModelAndView("manager/jobupdate", "JobPosting", new JobPosting());
+	}
+	
 	@RequestMapping("/createJobPosting")
 	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp){
 		JobService js = new JobService();

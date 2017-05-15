@@ -1,3 +1,4 @@
+<%@ include file="../default/navbar.jsp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -9,9 +10,9 @@
 <body>
 <form:form id="updateJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/updateJobPosting" method="post" class="form-horizontal">
   <div class="form-group">
-    <form:label class="control-label col-sm-2" path="_JobID">Job ID:</form:label>
+    <form:label class="control-label col-sm-2" path="_jobID">Job ID:</form:label>
     <div class="col-sm-10">
-      <form:input type="text" pattern="[0-9]+" class="form-control" path="_JobID" placeholder="Enter Job ID." />
+      <form:input type="text" pattern="[0-9]+" class="form-control" path="_jobID" placeholder="Enter Job ID." />
     </div>
   </div>
   <div class="form-group">

@@ -81,13 +81,14 @@ public class JobService {
 		p.setPositionType(jp.getLocation());
 		p.setSalaryRate(jp.getSalaryRate());
 		
+		String jsonstring= "{}";
 		try{
-			return new ObjectMapper().readValue(jobClient.put(int.class), JobPosting.class)
+			jsonstring = new ObjectMapper().writeValueAsString(p);
 		}
 		catch(IOException e){
 			e.printStackTrace();
 		}
-		int result = jobClient.put(jsonstring);
+		jobClient.put(jsonstring);
 	}
 	
 	/**
