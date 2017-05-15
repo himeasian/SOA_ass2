@@ -25,21 +25,56 @@ import au.edu.unsw.soacourse.foundit.model.JobPosting;
  */
 public class JobService {
 	
-	private final static String[] APP_STATUSES = {"Received", "In-Review", "Accept", "Reject", "Interview"};
-	
-	public void createApplication(JobApplication ja) {
+	/**
+	 * Updates a pre-existing job application as long as the application application status is still 'received'
+	 * @param ja
+	 */
+	public void updateApplication(JobApplication ja) {
 		jobClient.reset();
-		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON);
+		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
 		
 		Application a = new Application();
-		a.set_jobID(ja.get_appID());
+		a.set_jobID(ja.get_jobID());
 		a.setAttachment1(ja.getAttachment1());
 		a.setAttachment2(ja.getAttachment2());
 		a.setCandidatesDetails(ja.getCandidatesDetails());
 		a.setCoverLetter(ja.getCoverLetter());
 		a.setStatus(APP_STATUSES[0]);
 		
-		jobClient.post(new JSONObject(a));
+		String jsonString = "{}";	
+		try {
+			jsonString = new ObjectMapper().writeValueAsString(a);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		jobClient.post(jsonString);
+	}
+	
+	/**
+	 * Creates an application for the applicant
+	 * @param ja
+	 */
+	public void createApplication(JobApplication ja) {
+		jobClient.reset();
+		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
+		
+		Application a = new Application();
+		a.set_jobID(ja.get_jobID());
+		a.setAttachment1(ja.getAttachment1());
+		a.setAttachment2(ja.getAttachment2());
+		a.setCandidatesDetails(ja.getCandidatesDetails());
+		a.setCoverLetter(ja.getCoverLetter());
+		a.setStatus(APP_STATUSES[0]);
+		
+		String jsonString = "{}";	
+		try {
+			jsonString = new ObjectMapper().writeValueAsString(a);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		jobClient.post(jsonString);
 	}
 	
 	
@@ -119,9 +154,10 @@ public class JobService {
 				if (jp != null) {
 					JobApplication ja = new JobApplication();
 					ja.set_jobID(a.get_jobID());
-					ja.setCandidatesDetails(a.getCandidatesDetails());
+					ja.setStatus(a.getStatus());
 					ja.setCompanyName(jp.getCompanyName());
 					ja.setPositionType(jp.getPositionType());
+					results.add(ja);
 				}
 			}
 		}
@@ -206,7 +242,7 @@ public class JobService {
 	}
 	
 	public static final String JOB_SERVICE = "http://localhost:8080/JobService";
-	
+	private final static String[] APP_STATUSES = {"Received", "In-Review", "Accept", "Reject", "Interview"};
 	private WebClient jobClient;
 
 	

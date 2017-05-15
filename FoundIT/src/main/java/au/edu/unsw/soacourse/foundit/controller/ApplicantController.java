@@ -69,12 +69,15 @@ public class ApplicantController {
 
 	@RequestMapping("/job/{id}")
 	public ModelAndView viewJobPosting(@PathVariable("id") Integer id) {
-		return new ModelAndView("applicant/jobdetails", "jobPosting", new JobService().getJobPost(id));
+		ModelAndView mv = new ModelAndView("applicant/jobdetails");
+		mv.addObject("jobPosting", new JobService().getJobPost(id));
+		mv.addObject("jobApplication", new JobApplication());
+		return mv;
 	}
 
 	@RequestMapping(value = "/job/{id}/apply", method = RequestMethod.GET)
 	public ModelAndView showApplicationForm(@PathVariable("id") Integer id) {
-		ModelAndView mv = new ModelAndView("applicant/jobapplication");
+		ModelAndView mv = new ModelAndView("applicant/jobdetails");
 		mv.addObject("jobPosting", new JobService().getJobPost(id));
 		mv.addObject("apply", true);
 		mv.addObject("jobApplication", new JobApplication());
@@ -88,9 +91,10 @@ public class ApplicantController {
 			return new ModelAndView("errors");
 		
 		User u = (User) request.getSession().getAttribute("user");
-		ja.setCandidatesDetails(u.getEmail() + " " + u.getFname() + " " + u.getLname() + " " + ja.getPhoneNo());
+		ja.setCandidatesDetails(u.getEmail() + " " + u.getFname() + " " + u.getLname() + ((ja.getPhoneNo() != 0) ?  " " +ja.getPhoneNo() : ""));
 		ja.set_jobID(id);
-
-		return null;
+		new JobService().createApplication(ja);
+		
+		return new ModelAndView("redirect:/applicant");
 	}
 }

@@ -1,4 +1,3 @@
-<%@ include file="jobdetails.jsp"%>
 <div class="container">
 	<form:form modelAttribute="jobApplication" action="${pageContext.servletContext.contextPath}/applicant/job/${jobPosting._jobID}/apply" method="post">
 		<div class="row">
