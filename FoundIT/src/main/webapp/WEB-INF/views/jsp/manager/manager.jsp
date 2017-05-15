@@ -8,7 +8,12 @@
 <body>
 
 <div class="container" >
-  <h2>All Job Postings</h2>           
+  <h2>All Job Postings</h2>  
+  <c:if test="${not empty errmsg}">
+	<div class="row">
+		<header style="color: red;"><h6>${errmsg}</h6></header>
+	</div>
+  </c:if>         
   <table class="table" id="maintable">
     <thead>
       <tr>

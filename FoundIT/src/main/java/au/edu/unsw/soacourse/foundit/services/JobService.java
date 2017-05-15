@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import au.edu.unsw.soacourse.foundit.bean.JobApplication;
 import au.edu.unsw.soacourse.foundit.model.Application;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
+import au.edu.unsw.soacourse.foundit.model.Review;
 
 /**
  * Job service helper
@@ -181,6 +183,13 @@ public class JobService {
 		}
 	}
 	
+	public void archiveJobPost(int id) {
+		jobClient.reset();
+		jobClient.path("/jobs/" + id).accept(MediaType.APPLICATION_JSON);
+		jobClient.delete();
+		
+	}
+	
 	public List<JobPosting> getAllJobPosts(){
 		List<JobPosting> results = new ArrayList<>();
 		jobClient.reset();
@@ -188,6 +197,54 @@ public class JobService {
 		String jsonString = jobClient.get(String.class);
 		try{
 			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, JobPosting.class));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
+	public List<Application> getAllApplications(){
+		List<Application> results = new ArrayList<Application>();
+		jobClient.reset();
+		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try{
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Application.class));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
+	public Application getApplication(int jobid, int appid) {
+		jobClient.reset();
+		jobClient.path("/jobs/" + jobid + "/application/" + appid).accept(MediaType.APPLICATION_JSON);
+		try {
+			return new ObjectMapper().readValue(jobClient.get(String.class), Application.class);
+		} catch (IOException e) {
+			return null;			
+		}
+	}
+	
+	public Review getReview(int appid, int reviewid) {
+		jobClient.reset();
+		jobClient.path("/jobs/application/" + appid + "/review/" + reviewid).accept(MediaType.APPLICATION_JSON);
+		try {
+			return new ObjectMapper().readValue(jobClient.get(String.class), Review.class);
+		} catch (IOException e) {
+			return null;			
+		}
+	}
+	
+	public List<Review> getAllReviews(){
+		List<Review> results = new ArrayList<Review>();
+		jobClient.reset();
+		jobClient.path("/jobs/application/review").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try{
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Review.class));
 		}
 		catch(IOException e){
 			e.printStackTrace();

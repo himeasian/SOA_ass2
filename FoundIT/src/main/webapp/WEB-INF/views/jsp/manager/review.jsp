@@ -29,7 +29,7 @@
 				<td>${row.reviewerDetails}</td>
 				<td>${row.comments}</td>
 				<td>${row.decision}</td>
-				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedreview/${row._reviewID}">Link</td>
+				<td ><a href="${pageContext.servletContext.contextPath}/manager/${row._appID}/detailedreview/${row._reviewID}">Link</td>
 			</tr>
 		</c:forEach>
       

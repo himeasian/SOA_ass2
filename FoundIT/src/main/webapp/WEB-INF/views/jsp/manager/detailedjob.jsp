@@ -50,6 +50,14 @@
 		    		<button name="jobupdatebutton" value='${jobposting._jobID}' >Update Job Post</button>
 		    	</form:form>
 		    	</td>
+		    	
+		    </tr>
+		    <tr>
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/jobarchive" method="post">
+		    		<button name="jobarchivebutton" value='${jobposting._jobID}' >Archive Job Post</button>
+		    	</form:form>
+		    	</td>
+		    </tr>
   	</table>
 </div>
 
