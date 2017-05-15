@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,12 +17,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import au.edu.unsw.soacourse.foundit.bean.Register;
+import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
 import au.edu.unsw.soacourse.foundit.model.Application;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
 import au.edu.unsw.soacourse.foundit.model.Review;
+import au.edu.unsw.soacourse.foundit.model.User;
+import au.edu.unsw.soacourse.foundit.model.HiringTeam;
 import au.edu.unsw.soacourse.foundit.services.JobService;
 
 /**
@@ -30,7 +40,13 @@ import au.edu.unsw.soacourse.foundit.services.JobService;
 public class ManagerController {
 	
 	@RequestMapping("")
-	public ModelAndView jobsList() {
+	public ModelAndView jobsList(HttpSession session) {
+
+		//ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		//HttpSession session = attr.getRequest().getSession();
+		User u = new User();
+		u= (User) session.getAttribute("user");
+		String email = u.getEmail();
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
 		/*JobPosting jp = new JobPosting();
 		jp.set_jobID(24);
@@ -42,8 +58,11 @@ public class ManagerController {
 		jplist.add(jp);
 		*/
 		
+		DatabaseHandler db = new DatabaseHandler();
+		User main = db.getUser(email);
+		String companyname = main.getCompany();
 		JobService js = new JobService();
-		jplist=js.getAllJobPosts();
+		jplist=js.getAllJobPosts(companyname);
 		
 		return new ModelAndView("manager/manager", "jobpostings", jplist);
 		
@@ -113,12 +132,14 @@ public class ManagerController {
 	
 	@RequestMapping("/jobarchive")
 	public ModelAndView jobArchiveAction(@RequestParam(value="jobarchivebutton") int jobID) {
+		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		HttpSession session = attr.getRequest().getSession();
 		JobPosting jp = new JobPosting();
 		jp.set_jobID(jobID);
 		JobService js = new JobService();
 		js.archiveJobPost(jobID);
 		String msg = "Delete of "+jobID + " has been successful!";
-		return jobsList().addObject("errmsg", msg);
+		return jobsList(session).addObject("errmsg", msg);
 	}
 	
 	@RequestMapping("/createJobPosting")
@@ -170,13 +191,38 @@ public class ManagerController {
 	}
 	
 	@RequestMapping("/hiringteam/assign")
-	public String assignhiringTeamAction(@RequestParam(value="assignteam") int jobID) {
-		// YOU ARE UP TO HERE NOW IN THE WORK!!!!!!!!!!!!!
+	public String assignhiringTeamAction(@ModelAttribute("HiringTeam") HiringTeam ht, @RequestParam(value="assignteam") int jobID) {
+		
+		String email1 = ht.getEmail1();
+		String email2 = ht.getEmail2();
+		DatabaseHandler db = new DatabaseHandler();
+		User u1 = db.getUser(email1);
+		User u2 = db.getUser(email2);
+		if(u1==null){
+			Register r = new Register();
+			r.setEmail(email1);
+			db.createUser(r);
+		}
+		if(u2==null){
+			Register r = new Register();
+			r.setEmail(email1);
+			db.createUser(r);
+		}
+		JobService js = new JobService();
+		List<Application> la = new ArrayList<Application>();
+		la=js.getApplicationPerJob(jobID);
+		for(Application app:la){
+			app.get_appID();
+			js.createReview(app.get_jobID(),email1);
+			js.createReview(app.get_jobID(),email2);
+		}
 		return "manager/hiringteam";
 	}
 	
-	
-	
+	@RequestMapping("/createhiringmember")
+	public ModelAndView createHiringMemmber(@ModelAttribute("User") User usr){
+		
+	}
 	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
 	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp){
 		// Need to access jobservice and perform delete on jobid

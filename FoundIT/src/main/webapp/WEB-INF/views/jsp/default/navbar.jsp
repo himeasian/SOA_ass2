@@ -19,7 +19,6 @@
       <li><a href="${pageContext.servletContext.contextPath}/manager/jobupdate">Update JobPosting</a>
       <li><a href="${pageContext.servletContext.contextPath}/manager/application">Applications</a></li>
       <li><a href="${pageContext.servletContext.contextPath}/manager/review">Reviews</a></li>
-      <li><a href="${pageContext.servletContext.contextPath}/manager/hiringteam">Hiring Teams</a>
     </ul>
   </div>
 </div>

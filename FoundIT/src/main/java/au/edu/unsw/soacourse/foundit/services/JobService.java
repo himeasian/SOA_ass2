@@ -190,10 +190,10 @@ public class JobService {
 		
 	}
 	
-	public List<JobPosting> getAllJobPosts(){
+	public List<JobPosting> getAllJobPosts(String companyname){
 		List<JobPosting> results = new ArrayList<>();
 		jobClient.reset();
-		jobClient.path("/jobs").accept(MediaType.APPLICATION_JSON);
+		jobClient.path("/jobs/search").query("companyName", companyname).accept(MediaType.APPLICATION_JSON);
 		String jsonString = jobClient.get(String.class);
 		try{
 			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, JobPosting.class));
@@ -226,6 +226,24 @@ public class JobService {
 		} catch (IOException e) {
 			return null;			
 		}
+	}
+	
+	public List<Application> getApplicationPerJob(int jobid) {
+		List<Application> results = new ArrayList<Application>();
+		jobClient.reset();
+		jobClient.path("/jobs/" + jobid + "/application/").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try {
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Application.class));
+		} catch (IOException e) {
+			e.printStackTrace();			
+		}
+		return results;
+	}
+	
+	public void createReview(int appid, String email){
+		jobClient.reset();
+		jobClient.path("/application/review").accept(MediaType.APPLICATION_JSON);
 	}
 	
 	public Review getReview(int appid, int reviewid) {
