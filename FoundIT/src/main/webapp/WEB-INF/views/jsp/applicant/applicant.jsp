@@ -52,7 +52,7 @@
 						<tbody>
 							<c:forEach var="row" items="${currentApplications}">
 								<tr class='clickable-row'
-									data-href="${pageContext.servletContext.contextPath}/applicant/job/${row._jobID}">
+									data-href="${pageContext.servletContext.contextPath}/applicant/job/${row._jobID}/application/${row._appID}">
 									<td>${row.companyName}</td>
 									<td>${row.positionType}</td>
 									<td>${row.status}</td>

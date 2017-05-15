@@ -32,9 +32,9 @@
 						<td><c:out value="${jobPosting.status}" /></td>
 					</tr>
 				</table>
-				<c:if test="${empty apply}">
+				<c:if test="${empty apply and empty update}">
 					<a class="btn btn-default pull-right"
-						href="${pageContext.servletContext.contextPath}/applicant/job/${jobPosting._jobID}/apply"
+						href="${pageContext.servletContext.contextPath}/applicant/job/${jobPosting._jobID}/application"
 						role="button">Apply</a>
 				</c:if>
 			</div>
@@ -44,4 +44,7 @@
 </div>
 <c:if test="${not empty apply}">
 	<%@ include file="jobapplication.jsp" %>
+</c:if>
+<c:if test="${not empty update}">
+	<%@ include file="jobupdate.jsp" %>
 </c:if>

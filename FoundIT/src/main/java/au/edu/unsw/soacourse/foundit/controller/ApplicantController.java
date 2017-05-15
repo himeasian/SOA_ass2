@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import au.edu.unsw.soacourse.foundit.bean.JobApplication;
+import au.edu.unsw.soacourse.foundit.model.Application;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
 import au.edu.unsw.soacourse.foundit.model.User;
 import au.edu.unsw.soacourse.foundit.services.JobService;
@@ -75,7 +76,7 @@ public class ApplicantController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/job/{id}/apply", method = RequestMethod.GET)
+	@RequestMapping(value = "/job/{id}/application", method = RequestMethod.GET)
 	public ModelAndView showApplicationForm(@PathVariable("id") Integer id) {
 		ModelAndView mv = new ModelAndView("applicant/jobdetails");
 		mv.addObject("jobPosting", new JobService().getJobPost(id));
@@ -84,17 +85,63 @@ public class ApplicantController {
 		return mv;
 	}
 
-	@RequestMapping(value = "/job/{id}/apply", method = RequestMethod.POST)
+	@RequestMapping(value = "/job/{jid}/application/{aid}", method = RequestMethod.GET)
+	public ModelAndView updateApplicationForm(@PathVariable("jid") Integer jid, @PathVariable("aid") Integer aid) {
+		ModelAndView mv = new ModelAndView("applicant/jobdetails");
+
+		JobService js = new JobService();
+
+		mv.addObject("jobPosting", js.getJobPost(jid));
+		mv.addObject("update", true);
+		JobApplication ja = js.getApplication(jid, aid);
+		
+		int n = 0;
+		try {
+			String[] details = ja.getCandidatesDetails().split(",");
+			n = Integer.parseInt(details[details.length - 1]);
+		} catch (Exception e) {
+			n = 0;
+		}
+		ja.setPhoneNo(n);		
+		mv.addObject("jobApplication", ja);
+		return mv;
+	}
+
+	@RequestMapping(value = "/job/{id}/application", method = RequestMethod.POST)
 	public ModelAndView sendApplication(@ModelAttribute("jobApplication") JobApplication ja, BindingResult result,
 			@PathVariable("id") Integer id, HttpServletRequest request) {
 		if (result.hasErrors())
 			return new ModelAndView("errors");
-		
+
 		User u = (User) request.getSession().getAttribute("user");
-		ja.setCandidatesDetails(u.getEmail() + " " + u.getFname() + " " + u.getLname() + ((ja.getPhoneNo() != 0) ?  " " +ja.getPhoneNo() : ""));
+		String details = "";
+		if (ja.getPhoneNo() == 0)
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname();
+		else
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname() + "," + ja.getPhoneNo();
+		ja.setCandidatesDetails(details);
 		ja.set_jobID(id);
 		new JobService().createApplication(ja);
-		
 		return new ModelAndView("redirect:/applicant");
+	}
+
+	@RequestMapping(value = "/job/{jid}/application/{aid}", method = RequestMethod.POST)
+	public ModelAndView updateApplication(@ModelAttribute("jobApplication") JobApplication ja, BindingResult result,
+			@PathVariable("jid") Integer jid, @PathVariable("aid") Integer aid, HttpServletRequest request) {
+		if (result.hasErrors())
+			return new ModelAndView("errors");
+		
+		User u = (User) request.getSession().getAttribute("user");
+		String details = "";
+		if (ja.getPhoneNo() == 0)
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname();
+		else
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname() + "," + ja.getPhoneNo();
+		ja.setCandidatesDetails(details);
+		ja.set_jobID(jid);
+		ja.set_appID(aid);
+		
+		new JobService().updateApplication(ja);
+		return new ModelAndView("redirect:/applicant/job/" + jid + "/application/" + aid);
 	}
 }

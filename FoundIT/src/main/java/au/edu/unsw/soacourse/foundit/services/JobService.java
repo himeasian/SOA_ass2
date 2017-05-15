@@ -25,6 +25,23 @@ import au.edu.unsw.soacourse.foundit.model.JobPosting;
  */
 public class JobService {
 	
+	
+	/**
+	 * Get an application given the jobid and appid key values
+	 * @param jobId
+	 * @param appId
+	 * @return an application model
+	 */
+	public JobApplication getApplication(int jobId, int appId) {
+		jobClient.reset();
+		jobClient.path("/jobs/" + jobId + "/application/" + appId).accept(MediaType.APPLICATION_JSON);
+		try {
+			return new ObjectMapper().readValue(jobClient.get(String.class), JobApplication.class);
+		} catch (IOException e) {
+			return null;			
+		}
+	}
+	
 	/**
 	 * Updates a pre-existing job application as long as the application application status is still 'received'
 	 * @param ja
@@ -34,6 +51,7 @@ public class JobService {
 		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
 		
 		Application a = new Application();
+		a.set_appID(ja.get_appID());
 		a.set_jobID(ja.get_jobID());
 		a.setAttachment1(ja.getAttachment1());
 		a.setAttachment2(ja.getAttachment2());
@@ -48,7 +66,7 @@ public class JobService {
 			e.printStackTrace();
 		}
 		
-		jobClient.post(jsonString);
+		jobClient.put(jsonString);
 	}
 	
 	/**
@@ -104,6 +122,7 @@ public class JobService {
 				JobPosting jp = getJobPost(a.get_jobID());
 				if (jp != null) {
 					JobApplication ja = new JobApplication();
+					ja.set_appID(a.get_appID());
 					ja.set_jobID(a.get_jobID());
 					ja.setStatus(a.getStatus());
 					ja.setCompanyName(jp.getCompanyName());
@@ -149,9 +168,7 @@ public class JobService {
 			jobClient.query(entry.getKey(), entry.getValue());
 		}
 		
-		String jsonString = jobClient.get(String.class);
-//		System.out.println(jsonString);
-		
+		String jsonString = jobClient.get(String.class);		
 		List<JobPosting> results = new ArrayList<>();
 		
 		try {
