@@ -25,14 +25,14 @@
     <tbody>
 		<c:forEach var="row" items="${jobpostings}">
 			<tr>
-				<!-- <td>${row._JobID}</td>
+				<!-- <td>${row._jobID}</td>
 				 <td>${row.companyName}</td>
 				<td>${row.salaryRate}</td>
 				<td>${row.positionType}</td>-->
 				<td>${row.location}</td>
 				<td>${row.jobDescription}</td>
 				<td>${row.status}</td>
-				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._JobID}">Link</td>
+				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._jobID}">Link</td>
 			</tr>
 		</c:forEach>
       
