@@ -89,7 +89,7 @@ public class JobService {
 		p.setCompanyName(jp.getCompanyName());
 		p.setJobDescription(jp.getJobDescription());
 		p.setLocation(jp.getLocation());
-		p.setPositionType(jp.getLocation());
+		p.setPositionType(jp.getPositionType());
 		p.setSalaryRate(jp.getSalaryRate());
 		
 		String jsonstring= "{}";

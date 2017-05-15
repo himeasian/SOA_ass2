@@ -100,7 +100,8 @@ public class ManagerController {
 	public ModelAndView jobUpdateAction(@RequestParam(value="jobupdatebutton") int jobID) {
 		JobPosting jp = new JobPosting();
 		jp.set_jobID(jobID);
-		
+		JobService js = new JobService();
+		jp = js.getJobPost(jobID);
 		
 		return new ModelAndView("manager/jobupdate", "JobPosting", jp);
 	}
