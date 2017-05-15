@@ -1,20 +1,17 @@
 <%@ include file="../default/navbar.jsp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-</head>
+
 <body>
-<form:form id="updateJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/updateJobPosting" method="post" class="form-horizontal">
-  <div class="form-group">
-    <form:label class="control-label col-sm-2" path="_jobID">Job ID:</form:label>
+<c:out value='${JobPosting._jobID}'/>
+<form:form id="updateJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/updateJobPosting/${JobPosting._jobID}" class="form-horizontal">
+  <!-- <div class="form-group">
+    <label for="_jobID" class="control-label col-sm-2" >Job ID:</label>
     <div class="col-sm-10">
-      <form:input type="text" pattern="[0-9]+" class="form-control" path="_jobID" placeholder="Enter Job ID." />
+      <input id="_jobID" type="text" pattern="[0-9]+" class="form-control"  placeholder="Enter Job ID." />
     </div>
-  </div>
+  </div> -->
+  <!-- <form:input path="_jobID" value="${JobPosting._jobID}" type="hidden"/> -->
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="companyName">Company Name</form:label>
     <div class="col-sm-10">

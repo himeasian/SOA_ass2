@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-
-import au.edu.unsw.soacourse.foundit.model.*;
+import au.edu.unsw.soacourse.foundit.model.Application;
+import au.edu.unsw.soacourse.foundit.model.JobPosting;
+import au.edu.unsw.soacourse.foundit.model.Review;
 import au.edu.unsw.soacourse.foundit.services.JobService;
 
 /**
@@ -95,20 +97,28 @@ public class ManagerController {
 	}
 	
 	@RequestMapping("/jobupdate")
-	public ModelAndView jobUpdateAction() {
-		return new ModelAndView("manager/jobupdate", "JobPosting", new JobPosting());
+	public ModelAndView jobUpdateAction(@RequestParam(value="jobupdatebutton") int jobID) {
+		JobPosting jp = new JobPosting();
+		jp.set_jobID(jobID);
+		
+		
+		return new ModelAndView("manager/jobupdate", "JobPosting", jp);
 	}
 	
 	@RequestMapping("/createJobPosting")
-	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp){
+	public String createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp, BindingResult result){
+		if (result.hasErrors())
+			return null;
+		
 		JobService js = new JobService();
 		js.createJobPosting(jp);
 		
 		return "manager/jobcreatesuccess";	
 	}
 	
-	@RequestMapping("/updateJobPosting")
-	public String updatejobPostingAction(@ModelAttribute("UpdateJob") JobPosting jp){
+	@RequestMapping("/updateJobPosting/{jobid}")
+	public String updatejobPostingAction(@ModelAttribute("JobPosting") JobPosting jp, @PathVariable("jobid") int jobID){
+		jp.set_jobID(jobID);
 		JobService js = new JobService();
 		js.updateJobPosting(jp);
 		return "manager/jobupdatesuccess";

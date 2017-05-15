@@ -46,6 +46,10 @@
 		    		<button name="jobbutton" value='${jobposting._jobID}' >Add reviewers</button>
 		    	</form:form>
 		    	</td>
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/jobupdate" method="post">
+		    		<button name="jobupdatebutton" value='${jobposting._jobID}' >Update Job Post</button>
+		    	</form:form>
+		    	</td>
   	</table>
 </div>
 
