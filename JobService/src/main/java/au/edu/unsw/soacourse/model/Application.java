@@ -50,9 +50,5 @@ public class Application {
 	}
 	public void setAttachment2(String attachment2) {
 		Attachment2 = attachment2;
-	}
-	
-	
-	
-	
+	}	
 }

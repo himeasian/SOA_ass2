@@ -10,6 +10,11 @@ import java.sql.Statement;
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.model.User;
 
+/**
+ * Database handler specific for foundit app
+ * @author trungisme
+ *
+ */
 public class DatabaseHandler {
 
 	/**

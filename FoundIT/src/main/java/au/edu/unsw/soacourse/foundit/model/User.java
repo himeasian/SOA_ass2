@@ -1,5 +1,10 @@
 package au.edu.unsw.soacourse.foundit.model;
 
+/**
+ * User model (bean)
+ * @author trungisme
+ *
+ */
 public class User {
 	private String fname;
 	private String lname;

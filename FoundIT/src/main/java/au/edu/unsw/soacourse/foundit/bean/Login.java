@@ -1,5 +1,10 @@
 package au.edu.unsw.soacourse.foundit.bean;
 
+/**
+ * Login Bean
+ * @author trungisme
+ *
+ */
 public class Login {
 
 	private String email;

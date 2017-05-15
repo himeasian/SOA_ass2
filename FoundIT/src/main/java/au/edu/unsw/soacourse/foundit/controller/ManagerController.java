@@ -16,7 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import au.edu.unsw.soacourse.foundit.model.*;
 
-
+/**
+ * Manager specific controller
+ * @author trungisme
+ *
+ */
 @Controller
 @RequestMapping("manager")
 public class ManagerController {
@@ -25,7 +29,7 @@ public class ManagerController {
 	public ModelAndView indexAction() {
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
 		JobPosting jp = new JobPosting();
-		jp.set_JobID(24);
+		jp.set_jobID(24);
 		//jp.setCompanyName("Microsoft");
 		//jp.setSalaryRate(100000);
 		jp.setLocation("Sydney");
@@ -70,7 +74,7 @@ public class ManagerController {
 	@RequestMapping("/detailedjob/{jobID}") 
 	public ModelAndView detailedJobPosting(@PathVariable("jobID") int jobID){
 		JobPosting jp = new JobPosting();
-		jp.set_JobID(jobID);
+		jp.set_jobID(jobID);
 		return new ModelAndView("detailedjob", "jobposting", jp);
 	}
 	
@@ -124,7 +128,7 @@ public class ManagerController {
 	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
 	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp){
 		// Need to access jobservice and perform delete on jobid
-		int jobid = jp.get_JobID();
+		int jobid = jp.get_jobID();
 		boolean result = false;
 		//get boolean result from jobservice;
 		return new ModelAndView("archiving", "result", result);
