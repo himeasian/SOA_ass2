@@ -22,7 +22,7 @@ public class DatabaseHandler {
 	public static final String REVIEWS_TABLE = "Reviews";
 	
 	private static final String CREATE_JOB_POSTINGS_TABLE = "CREATE TABLE IF NOT EXISTS " + JOB_POSTINGS_TABLE + " ("
-			+ "_JobID integer PRIMARY KEY,"
+			+ "_jobID integer PRIMARY KEY,"
 			+ "CompanyName text,"
 			+ "SalaryRate real,"
 			+ "PositionType text,"
@@ -34,13 +34,13 @@ public class DatabaseHandler {
 	
 	private static final String CREATE_APPLICATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + APPLICATIONS_TABLE + " ("
 			+ "_AppID integer PRIMARY KEY,"
-			+ "_JobID integer NOT NULL,"
+			+ "_jobID integer NOT NULL,"
 			+ "CandidatesDetails text,"
 			+ "CoverLetter text,"
 			+ "Status text NOT NULL,"
 			+ "Attachment1 text,"
 			+ "Attachment2 text,"
-			+ "FOREIGN KEY(_JobID) REFERENCES Jobs(_JobID)"
+			+ "FOREIGN KEY(_jobID) REFERENCES Jobs(_jobID)"
 			+ ");";
 	
 	private static final String CREATE_REVIEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + REVIEWS_TABLE + " ("
@@ -104,7 +104,7 @@ public class DatabaseHandler {
 	private JobPosting generateJobPosting(ResultSet rs) throws SQLException{
 		JobPosting jp = new JobPosting();
 		//rs.next();
-		jp.set_jobID(rs.getInt("_JobID"));
+		jp.set_jobID(rs.getInt("_jobID"));
 		jp.setCompanyName(rs.getString("CompanyName"));
 		jp.setSalaryRate(rs.getFloat("SalaryRate"));
 		jp.setPositionType(rs.getString("PositionType"));
@@ -119,11 +119,11 @@ public class DatabaseHandler {
 	/**
 	 * Check if job posting exists in Jobs based on JobPosting passed
 	 * @param jp
-	 * @return _JobID
+	 * @return _jobID
 	 */
 	private int checkJobPostingExists(JobPosting jp){
 		try(Connection conn = connect()){
-			String stmtstrcheck = "SELECT _JobID FROM Jobs WHERE CompanyName = ? "
+			String stmtstrcheck = "SELECT _jobID FROM Jobs WHERE CompanyName = ? "
 					+ "AND SalaryRate = ? "
 					+ "AND PositionType = ?"
 					+ "AND Location = ? "
@@ -201,16 +201,16 @@ public class DatabaseHandler {
 		
 	}
 
-	public JobPosting getJobPosting(int _JobID){
+	public JobPosting getJobPosting(int _jobID){
 		JobPosting jp = new JobPosting();
 		
 		try(Connection conn = connect()){
-			String query = "SELECT * FROM Jobs WHERE _JobID = ?";
+			String query = "SELECT * FROM Jobs WHERE _jobID = ?";
 			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, _JobID);
+			pstmt.setInt(1, _jobID);
 			ResultSet rs = pstmt.executeQuery();
-			//rs.next();
-			jp = generateJobPosting(rs);
+			if (rs.next())
+				jp = generateJobPosting(rs);
 			return jp;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -256,7 +256,7 @@ public class DatabaseHandler {
 				statuslist.add("Sent-Invitations");
 				statuslist.add("Completed");*/
 				
-				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+				String jobcheckquery = "SELECT * FROM Jobs WHERE _jobID = ?";
 				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
 				stmt2.setInt(1,JobID);
 				ResultSet rs2 = stmt2.executeQuery();
@@ -268,7 +268,7 @@ public class DatabaseHandler {
 				
 				// Also need to check if no applications are submitted against a JOB ID
 				
-				String appquery = "SELECT COUNT(*) as total FROM Applications WHERE _JobID = ?";
+				String appquery = "SELECT COUNT(*) as total FROM Applications WHERE _jobID = ?";
 				PreparedStatement stmtapp = conn.prepareStatement(appquery);
 				stmtapp.setInt(1, JobID);
 				ResultSet rsapp = stmtapp.executeQuery();
@@ -279,7 +279,7 @@ public class DatabaseHandler {
 				// Now need to add a check that allows status to be changed to processing, closed etc only if its not open
 				// also need to compared the current status in the db vs the status being passed/wanting to change to
 				if(ucheck >= dbcheck && dbcheck<2 && appcheck==0){
-					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _JobID = ?";
+					String updatequery = "UPDATE Jobs SET CompanyName = ?, SalaryRate = ?, PositionType = ?, Location = ?, JobDescription = ?, Status = ?, Classification = ? WHERE _jobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getCompanyName());
 					stmt.setFloat(2, jp.getSalaryRate());
@@ -293,7 +293,7 @@ public class DatabaseHandler {
 					return 1;
 				}
 				if (ucheck>=dbcheck && appcheck>0){
-					String updatequery = "UPDATE Jobs SET Status = ? WHERE _JobID = ?";
+					String updatequery = "UPDATE Jobs SET Status = ? WHERE _jobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, jp.getStatus());
 					stmt.setInt(2, JobID);
@@ -374,7 +374,7 @@ public class DatabaseHandler {
 		
 		while(rs.next()){
 			JobPosting temp = new JobPosting();
-			temp.set_jobID(rs.getInt("_JobID"));
+			temp.set_jobID(rs.getInt("_jobID"));
 			temp.setCompanyName(rs.getString("CompanyName"));
 			temp.setSalaryRate(rs.getFloat("SalaryRate"));
 			temp.setPositionType(rs.getString("PositionType"));
@@ -392,20 +392,20 @@ public class DatabaseHandler {
 		}
 	}
 	
-	public boolean deleteJobPosting(int _JobID){
+	public boolean deleteJobPosting(int _jobID){
 		try(Connection conn = connect()){
 			// Check if job posting exists
-			String sqlquery = "SELECT COUNT(*) AS total FROM Jobs WHERE _JobID = ?";
+			String sqlquery = "SELECT COUNT(*) AS total FROM Jobs WHERE _jobID = ?";
 			PreparedStatement stmt = conn.prepareStatement(sqlquery);
-			stmt.setInt(1, _JobID);
+			stmt.setInt(1, _jobID);
 			ResultSet rs = stmt.executeQuery();
 			
 			if(rs.next()){
 				int total = rs.getInt("total");
 				if(total>0){
-					String sqlquerydelete = "DELETE FROM Jobs WHERE _JobID = ?";
+					String sqlquerydelete = "DELETE FROM Jobs WHERE _jobID = ?";
 					PreparedStatement stmt2 = conn.prepareStatement(sqlquerydelete);
-					stmt2.setInt(1, _JobID);
+					stmt2.setInt(1, _jobID);
 					int result = stmt2.executeUpdate();
 					return true;
 				}
@@ -422,14 +422,14 @@ public class DatabaseHandler {
 	public Application getApplication(int jobid, int appid){
 		Application app = new Application();
 		try(Connection conn = connect()){
-			String sqlquery = "SELECT * FROM Applications WHERE _AppID = ? AND _JobID = ?;";
+			String sqlquery = "SELECT * FROM Applications WHERE _AppID = ? AND _jobID = ?;";
 			PreparedStatement stmt = conn.prepareStatement(sqlquery);
 			stmt.setInt(1, appid);
 			stmt.setInt(2, jobid);
 			ResultSet rs = stmt.executeQuery();
 			rs.next();
 			app.set_appID(rs.getInt("_AppID"));
-			app.set_jobID(rs.getInt("_JobID"));
+			app.set_jobID(rs.getInt("_jobID"));
 			app.setCandidatesDetails(rs.getString("CandidatesDetails"));
 			app.setCoverLetter(rs.getString("CoverLetter"));
 			app.setStatus(rs.getString("Status"));
@@ -447,14 +447,14 @@ public class DatabaseHandler {
 	public List<Application> getApplicationForJobPosting(int jobid){
 		List<Application> applist = new ArrayList<Application>();
 		try(Connection conn = connect()){
-			String sqlquery = "SELECT * FROM Applications WHERE _JobID = ?;";
+			String sqlquery = "SELECT * FROM Applications WHERE _jobID = ?;";
 			PreparedStatement stmt = conn.prepareStatement(sqlquery);
 			stmt.setInt(1, jobid);
 			ResultSet rs = stmt.executeQuery();
 			while(rs.next()){
 				Application app = new Application();
 				app.set_appID(rs.getInt("_AppID"));
-				app.set_jobID(rs.getInt("_JobID"));
+				app.set_jobID(rs.getInt("_jobID"));
 				app.setCandidatesDetails(rs.getString("CandidatesDetails"));
 				app.setCoverLetter(rs.getString("CoverLetter"));
 				app.setStatus(rs.getString("Status"));
@@ -480,7 +480,7 @@ public class DatabaseHandler {
 			while(rs.next()){
 				Application app = new Application();
 				app.set_appID(rs.getInt("_AppID"));
-				app.set_jobID(rs.getInt("_JobID"));
+				app.set_jobID(rs.getInt("_jobID"));
 				app.setCandidatesDetails(rs.getString("CandidatesDetails"));
 				app.setCoverLetter(rs.getString("CoverLetter"));
 				app.setStatus(rs.getString("Status"));
@@ -500,7 +500,7 @@ public class DatabaseHandler {
 		
 		try(Connection conn = connect()){
 			String sqlquery = "INSERT INTO Applications("
-					+ "_JobID, "
+					+ "_jobID, "
 					+ "CandidatesDetails, "
 					+ "CoverLetter, "
 					+ "Status, "
@@ -531,7 +531,7 @@ public class DatabaseHandler {
 		
 		try(Connection conn = connect()){
 			// Need to check if Application exists first.
-			/*String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _JobID = ?";
+			/*String sqlquery = "SELECT COUNT(*) AS total FROM Applications WHERE _AppID = ? AND _jobID = ?";
 			PreparedStatement stmt1 = conn.prepareStatement(sqlquery);
 			stmt1.setInt(1, AppID);
 			stmt1.setInt(2, JobID);
@@ -549,7 +549,7 @@ public class DatabaseHandler {
 				statuslist.add("Sent-Invitations");
 				statuslist.add("Completed");
 				*/
-				String jobcheckquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+				String jobcheckquery = "SELECT * FROM Jobs WHERE _jobID = ?";
 				PreparedStatement stmt2 = conn.prepareStatement(jobcheckquery);
 				stmt2.setInt(1,JobID);
 				ResultSet rs2 = stmt2.executeQuery();
@@ -559,7 +559,7 @@ public class DatabaseHandler {
 				int dbcheck = statuslist.indexOf(statuscheck);
 				
 				if(dbcheck<2){
-					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _JobID = ?";
+					String updatequery = "UPDATE Applications SET CandidatesDetails = ?, CoverLetter = ?, Status = ?, Attachment1 = ?, Attachment2 = ? WHERE _AppID = ? AND _jobID = ?";
 					PreparedStatement stmt = conn.prepareStatement(updatequery);
 					stmt.setString(1, app.getCandidatesDetails());
 					stmt.setString(2, app.getCoverLetter());
@@ -745,9 +745,9 @@ public class DatabaseHandler {
 			pstmt.setInt(1, AppID);
 			ResultSet rssearch = pstmt.executeQuery();
 			rssearch.next();
-			int jobid = rssearch.getInt("_JobID");
+			int jobid = rssearch.getInt("_jobID");
 			
-			String jobquery = "SELECT * FROM Jobs WHERE _JobID = ?";
+			String jobquery = "SELECT * FROM Jobs WHERE _jobID = ?";
 			PreparedStatement jstmt =conn.prepareStatement(jobquery);
 			jstmt.setInt(1, jobid);
 			ResultSet rsjob = jstmt.executeQuery();
