@@ -34,7 +34,7 @@ public class JobService {
 	 * @param appId
 	 * @return an application model
 	 */
-	public JobApplication getApplication(int jobId, int appId) {
+	public JobApplication getJobApplication(int jobId, int appId) {
 		jobClient.reset();
 		jobClient.path("/jobs/" + jobId + "/application/" + appId).accept(MediaType.APPLICATION_JSON);
 		try {

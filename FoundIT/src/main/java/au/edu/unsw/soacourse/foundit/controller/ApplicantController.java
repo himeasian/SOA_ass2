@@ -93,7 +93,7 @@ public class ApplicantController {
 
 		mv.addObject("jobPosting", js.getJobPost(jid));
 		mv.addObject("update", true);
-		JobApplication ja = js.getApplication(jid, aid);
+		JobApplication ja = js.getJobApplication(jid, aid);
 		
 		int n = 0;
 		try {
