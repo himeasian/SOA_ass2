@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,8 +70,14 @@ public class ManagerController {
 	}
 	
 	@RequestMapping("/application")
-	public ModelAndView applicationsList() {
+	public ModelAndView applicationsList(HttpSession session) {
 		List<Application> applist = new ArrayList<Application>();
+		List<Application> filteredapplist = new ArrayList<Application>();
+		List<JobPosting> jplist = new ArrayList<JobPosting>();
+		User u = new User();
+		u= (User) session.getAttribute("user");
+		String email = u.getEmail();
+		
 		/*Application app = new Application();
 		app.set_jobID(24);
 		//jp.setCompanyName("Microsoft");
@@ -82,9 +89,22 @@ public class ManagerController {
 		app.setAttachment2("2");
 		app.setStatus("Considered");
 		applist.add(app);*/
+		
+		DatabaseHandler db = new DatabaseHandler();
+		User main = db.getUser(email);
+		String companyname = main.getCompany();
 		JobService js = new JobService();
+		jplist=js.getAllJobPosts(companyname);
 		applist=js.getAllApplications();
-		return new ModelAndView("manager/application", "applications", applist);
+		
+		for(Application app:applist){
+			for(JobPosting job:jplist){
+				if(app.get_jobID()==job.get_jobID()){
+					filteredapplist.add(app);
+				}
+			}
+		}
+		return new ModelAndView("manager/application", "applications", filteredapplist);
 	}
 	
 	@RequestMapping("/review")
@@ -187,27 +207,38 @@ public class ManagerController {
 	
 	@RequestMapping("/hiringteam")
 	public ModelAndView hiringTeamAction(@RequestParam(value="jobbutton") int jobID) {
-		return new ModelAndView("manager/hiringteam", "jobID", jobID);
+		return new ModelAndView("manager/hiringteam", "jobID", jobID).addObject("HiringTeam", new HiringTeam());
 	}
 	
 	@RequestMapping("/hiringteam/assign")
-	public String assignhiringTeamAction(@ModelAttribute("HiringTeam") HiringTeam ht, @RequestParam(value="assignteam") int jobID) {
-		
+	public ModelAndView assignhiringTeamAction(@ModelAttribute("HiringTeam") HiringTeam ht, @RequestParam(value="assignteam") int jobID) {
+		String msg="";
 		String email1 = ht.getEmail1();
 		String email2 = ht.getEmail2();
+		
+		if(email1.isEmpty() || email2.isEmpty()){
+			msg="Please fill out both email fields.";
+			return hiringTeamAction(jobID).addObject("errmsg", msg);
+		}
 		DatabaseHandler db = new DatabaseHandler();
 		User u1 = db.getUser(email1);
 		User u2 = db.getUser(email2);
-		if(u1==null){
-			Register r = new Register();
-			r.setEmail(email1);
-			db.createUser(r);
+		
+		if(u1==null || u2==null){
+			msg="Please enter two valid reviewer emails";
+			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
-		if(u2==null){
-			Register r = new Register();
-			r.setEmail(email1);
-			db.createUser(r);
+		
+		String role1 = u1.getRole();
+		String role2 = u2.getRole();
+		
+		if(!role1.equals("Reviewer") || !role2.equals("Reviewer")){
+			msg="Can't assign either or both emails as reviewers for this job";
+			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
+		
+		
+		
 		JobService js = new JobService();
 		List<Application> la = new ArrayList<Application>();
 		la=js.getApplicationPerJob(jobID);
@@ -216,13 +247,35 @@ public class ManagerController {
 			js.createReview(app.get_jobID(),email1);
 			js.createReview(app.get_jobID(),email2);
 		}
-		return "manager/hiringteam";
+		msg="Hiring team succesfully created!";
+		return hiringTeamAction(jobID).addObject("errmsg", msg);
 	}
 	
-	@RequestMapping("/createhiringmember")
-	public ModelAndView createHiringMemmber(@ModelAttribute("User") User usr){
+	@RequestMapping("/createreviewer")
+	public ModelAndView createReviewer(){
 		
+		return new ModelAndView("manager/createreviewer", "register", new Register());
 	}
+	
+	@RequestMapping(value = "/revieweraddition", method = RequestMethod.POST)
+	public ModelAndView reviewerAddition(@Validated @ModelAttribute("register") Register usr, BindingResult result){
+		
+		DatabaseHandler db = new DatabaseHandler();
+		usr.setRole("Reviewer");
+		int result2 = db.createUser(usr);
+		String msg ="Reviewer could not be created!";
+		if(!usr.getPassword().equals(usr.getConfirmPassword())){
+			msg="Your passwords do not match!";
+			return createReviewer().addObject("errmsg", msg);
+		}
+		if(result2>0){
+			msg="Reviewer succesfully created!";
+			return createReviewer().addObject("errmsg", msg);
+		}
+		
+		return createReviewer().addObject("errmsg", msg);
+	}
+	
 	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
 	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp){
 		// Need to access jobservice and perform delete on jobid
