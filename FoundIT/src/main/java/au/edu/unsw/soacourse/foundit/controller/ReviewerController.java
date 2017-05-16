@@ -15,7 +15,7 @@ public class ReviewerController {
 	
 	@RequestMapping("")
 	public ModelAndView indexAction() {
-		return new ModelAndView("reviewer");
+		return new ModelAndView("reviewer/reviewer");
 	}
 
 }

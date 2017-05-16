@@ -14,6 +14,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		System.out.println("Prehandling request");
 		String uri = request.getRequestURI();
+		System.out.println(uri);
 		if (!uri.equals("/FoundIT/") &&
 			!uri.equals("/FoundIT/login") &&
 			!uri.equals("/FoundIT/logout") &&
@@ -21,7 +22,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 			User u = (User) request.getSession().getAttribute("user");
 			if (u == null) {
 				request.setAttribute("logoutmsg", "You have been logged out");
-				request.getRequestDispatcher("../logout").forward(request, response);
+				request.getRequestDispatcher("logout").forward(request, response);
 				return false;
 			}
 			String[] uril = uri.split("/");

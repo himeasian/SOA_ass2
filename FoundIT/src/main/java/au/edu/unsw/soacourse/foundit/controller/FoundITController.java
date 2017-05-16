@@ -53,10 +53,7 @@ public class FoundITController {
 	@RequestMapping("/logout")
 	public ModelAndView logoutAction(HttpServletRequest request) {
 		request.getSession().invalidate();
-		String msg = (String) request.getAttribute("logoutmsg");
-		if (msg == null)
-			return new ModelAndView("default/loggedout", "logoutmsg", "You have logged out successfully!");
-		return new ModelAndView("default/loggedout", "logoutmsg", msg);
+		return new ModelAndView("default/loggedout");
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.GET)

@@ -1,11 +1,12 @@
 package au.edu.unsw.soacourse.foundit.controller;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -241,7 +242,15 @@ public class ManagerController {
 
 	@RequestMapping("/hiringteam")
 	public ModelAndView hiringTeamAction(@RequestParam(value = "jobbutton") int jobID) {
-		return new ModelAndView("manager/hiringteam", "jobID", jobID).addObject("HiringTeam", new HiringTeam());
+		Map<String, String> reviewers = new LinkedHashMap<String, String>();
+		List<User> rList = new DatabaseHandler().getReviewers();
+		if (rList.size() > 0) reviewers.put("", "");
+		
+		for (User u : rList) {
+			String e = u.getEmail();
+			reviewers.put(e, e);
+		}		
+		return new ModelAndView("manager/hiringteam", "jobID", jobID).addObject("HiringTeam", new HiringTeam()).addObject("reviewers", reviewers);
 	}
 
 	@RequestMapping("/hiringteam/assign")
@@ -267,7 +276,7 @@ public class ManagerController {
 		String role1 = u1.getRole();
 		String role2 = u2.getRole();
 
-		if (!role1.equals("Reviewer") || !role2.equals("Reviewer")) {
+		if (!role1.equals("reviewer") || !role2.equals("reviewer")) {
 			msg = "Can't assign either or both emails as reviewers for this job";
 			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
@@ -292,27 +301,24 @@ public class ManagerController {
 
 	@RequestMapping("/createreviewer")
 	public ModelAndView createReviewer() {
-
 		return new ModelAndView("manager/createreviewer", "register", new Register());
 	}
 
 	@RequestMapping(value = "/revieweraddition", method = RequestMethod.POST)
-	public ModelAndView reviewerAddition(@Validated @ModelAttribute("register") Register usr, BindingResult result) {
-
-		DatabaseHandler db = new DatabaseHandler();
-		usr.setRole("Reviewer");
-		int result2 = db.createUser(usr);
-		String msg = "Reviewer could not be created!";
-		if (!usr.getPassword().equals(usr.getConfirmPassword())) {
-			msg = "Your passwords do not match!";
-			return createReviewer().addObject("errmsg", msg);
+	public ModelAndView reviewerAddition(HttpServletRequest request, @Validated @ModelAttribute("register") Register usr) {
+		
+		usr.setRole("reviewer");
+		if (!usr.getPassword().equals(usr.getConfirmPassword()))
+			return new ModelAndView("manager/createreviewer", "errmsg", "Your passwords do not match!").addObject(usr);
+				
+		DatabaseHandler dbh = new DatabaseHandler();
+		if (dbh.getUser(usr.getEmail()) != null)
+			return new ModelAndView("manager/createreviewer", "errmsg", "Email already exists!").addObject(usr);
+		
+		if (new DatabaseHandler().createUser(usr) > 0) {
+			return new ModelAndView("manager/createreviewer", "successmsg", "Reviewer succesfully created!").addObject("register", new Register());
 		}
-		if (result2 > 0) {
-			msg = "Reviewer succesfully created!";
-			return createReviewer().addObject("errmsg", msg);
-		}
-
-		return createReviewer().addObject("errmsg", msg);
+		return new ModelAndView("manager/createreviewer", "errmsg", "ERROR: Reviewer could not be created!");
 	}
 
 	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
@@ -350,25 +356,6 @@ public class ManagerController {
 				}
 			}
 		}
-//
-//		boolean flag = true;
-//		List<Review> finalrevlist = new ArrayList<Review>();
-//		for (Review rev : filteredrevlist) {
-//			if (rev.getDecision() == null || rev.getDecision() == null) {
-//				flag = false;
-//				String msg = "Shortlisting process not yet complete.";
-//				return new ModelAndView("manager/candidateshortlist", "reviewlist", finalrevlist).addObject("errmsg",
-//						msg);
-//			}
-//		}
-//
-//		if (flag) {
-//			for (Review rev : filteredrevlist) {
-//				if (rev.getDecision().equals("Recommend")) {
-//					finalrevlist.add(rev);
-//				}
-//			}
-//		}
 		
 		Map<Integer, Review> recommended = new HashMap<Integer, Review>();
 		for (Review r : filteredrevlist) {

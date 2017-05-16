@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.model.User;
@@ -24,6 +26,36 @@ public class DatabaseHandler {
 	 */
 	public DatabaseHandler() {
 		createDb();
+	}
+	
+	/**
+	 * Returns a list of reviewers
+	 * @return
+	 */
+	public List<User> getReviewers() {
+		
+		try (Connection c = connect()) {
+			String sql = "select * from users where role = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, "reviewer");
+			ResultSet rs = pstmt.executeQuery();
+			
+			List<User> reviewers = new ArrayList<>();
+			while (rs.next()) {
+				User u = new User();
+				u.setFname(rs.getString("fname"));
+				u.setLname(rs.getString("lname"));
+				u.setEmail(rs.getString("email"));
+				u.setPassword(rs.getString("password"));
+				u.setRole(rs.getString("role"));
+				u.setCompany(rs.getString("company"));
+				reviewers.add(u);
+			}
+			return reviewers;
+			
+		} catch (SQLException e) {
+			return null;
+		}
 	}
 
 	/**
