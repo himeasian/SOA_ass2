@@ -23,12 +23,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
-import au.edu.unsw.soacourse.foundit.model.Application;
-import au.edu.unsw.soacourse.foundit.model.HiringTeam;
-import au.edu.unsw.soacourse.foundit.model.JobPosting;
-import au.edu.unsw.soacourse.foundit.model.Review;
-import au.edu.unsw.soacourse.foundit.model.User;
-import au.edu.unsw.soacourse.foundit.services.JobService;
+import au.edu.unsw.soacourse.foundit.model.*;
+import au.edu.unsw.soacourse.foundit.services.*;
+
 
 /**
  * Manager specific controller
@@ -367,5 +364,14 @@ public class ManagerController {
 		List<Review> finalList = new ArrayList<>(recommended.values());
 
 		return new ModelAndView("manager/candidateshortlist", "reviewlist", finalList);
+	}
+	
+	@RequestMapping("detailedapplication/createpoll")
+	public ModelAndView createPollForApplicant(@ModelAttribute("Poll") Poll poll){
+		DatabaseHandler db = new DatabaseHandler();
+		PollingService ps = new PollingService();
+		ps.createPoll(poll);
+		
+		return new ModelAndView();
 	}
 }

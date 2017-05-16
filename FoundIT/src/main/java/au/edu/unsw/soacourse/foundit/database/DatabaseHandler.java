@@ -11,6 +11,7 @@ import java.util.List;
 
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.model.User;
+import au.edu.unsw.soacourse.foundit.model.Poll;
 
 /**
  * Database handler specific for foundit app
@@ -119,6 +120,23 @@ public class DatabaseHandler {
 			return -1;
 		}
 	}
+	
+	public int createPoll(Poll p, String candidateDetails){
+		try (Connection c = connect()) {
+			String ins = "insert into polls(candidateDetails,_pid) values(?,?);";
+			PreparedStatement istmt = c.prepareStatement(ins);
+			istmt.setString(1, candidateDetails);
+			istmt.setInt(2, p.get_pId());
+			istmt.executeUpdate();
+			
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
 
 	/**
 	 * Create the database
@@ -128,6 +146,7 @@ public class DatabaseHandler {
 			Statement stmt = c.createStatement();
 			stmt.execute(CREATE_USERS_TABLE);
 			stmt.execute(CREATE_NOTIFICATION_TABLE);
+			stmt.execute(CREATE_POLLS_TABLE);
 
 		} catch (SQLException e) { // add a fault here
 			System.err.println(e.getMessage());
@@ -153,6 +172,7 @@ public class DatabaseHandler {
 	private static final String URL = "jdbc:sqlite:poll.db";
 	private static final String USERS_TABLE = "Users";
 	private static final String NOTIFICATION_TABLE = "Notifications";
+	private static final String POLL_TABLE = "Polls";
 
 	private static final String CREATE_USERS_TABLE = "create table if not exists " + USERS_TABLE + " ("
 			+ "_uid integer primary key," + "fname text not null," + "lname text not null,"
@@ -160,4 +180,7 @@ public class DatabaseHandler {
 
 	private static final String CREATE_NOTIFICATION_TABLE = "create table if not exists " + NOTIFICATION_TABLE + " ("
 			+ "_nid integer primary key," + "email references Users(email)," + "message text not null);";
+	private static final String CREATE_POLLS_TABLE = "create table if not exists " + POLL_TABLE + " ("
+			+ "_interviewid integer primary key," + "candidateDetails text not null," + "_pid integer not null);";
+	
 }

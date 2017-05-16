@@ -18,15 +18,11 @@
   
   <tr>
   	<th>AppID</th>
-  	<th>Reviewer Details</th>
-  	<th>Comments</th>
   	<th>Decision</th>
   </tr>
   		<c:forEach var="row" items="${reviewlist}">
 			<tr>
 				<td>${row._appID}</td>
-				<td>${row.reviewerDetails }</td>
-				<td>${row.comments}</td>
 				<td>${row.decision}</td>
 				
 			</tr>
