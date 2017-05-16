@@ -1,4 +1,4 @@
-<%@ include file="../default/navbar.jsp"%>
+<%@ include file="../default/nav.jsp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 

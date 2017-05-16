@@ -1,4 +1,4 @@
-<%@include file="../default/navbar.jsp" %>
+<%@include file="../default/nav.jsp" %>
 
 <body>
 <c:if test="${not empty errmsg}">
