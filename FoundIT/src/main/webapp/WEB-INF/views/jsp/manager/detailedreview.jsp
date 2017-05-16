@@ -8,8 +8,11 @@
 <title>review</title>
 
 <body>
-<div class="container" >
-	<h2>Review</h2>           
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">Review</div>
+      <div class="panel-body">
+       
 		<table class="table" id="maintable">
 			<tr>
         		<th>_ReviewID</th>

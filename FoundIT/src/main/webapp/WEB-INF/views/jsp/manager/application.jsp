@@ -9,8 +9,10 @@
 
 <body>
 
-<div class="container" >
-  <h2>All Applications</h2>           
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">All Applications</div>
+      <div class="panel-body">          
   <table class="table" id="maintable">
     <thead>
       <tr>
@@ -41,6 +43,9 @@
     </tbody>
   </table>
 </div>
+</div>
+</div>
+
 
 
 </body>
