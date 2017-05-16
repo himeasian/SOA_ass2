@@ -8,8 +8,11 @@
 <title>Insert title here</title>
 
 <body>
-<div class="container" >
-	<h2>Application</h2>           
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">Application</div>
+      <div class="panel-body">
+          
 		<table class="table" id="maintable">
 			<tr>
         		<th>_AppID</th>

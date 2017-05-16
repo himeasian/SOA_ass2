@@ -8,53 +8,59 @@
 <title>jobposting</title>
 </head>
 <body>
-Create Job Posting
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">Create Job Posting</div>
+      <div class="panel-body">
+
 <form:form id="createJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/createJobPosting" method="post" class="form-horizontal">
-  <div class="form-group">
+  <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="companyName">Company Name</form:label>
     <div class="col-sm-10">
       <form:input type="text" class="form-control" path="companyName" placeholder="Enter company name." />
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="salaryRate">Salary Rate:</form:label>
     <div class="col-sm-10"> 
       <form:input type="text" pattern="[0-9]+" class="form-control" path="salaryRate" placeholder="Enter salary rate."/>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="positionType">Position Type:</form:label>
     <div class="col-sm-10">
       <form:input type="text" class="form-control" path="positionType" placeholder="Enter position type."/>
     </div>
   </div>
-    <div class="form-group">
+    <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="location">Location:</form:label>
     <div class="col-sm-10">
       <form:input type="text" class="form-control" path="location" placeholder="Enter location."/>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="jobDescription">Job Description:</form:label>
     <div class="col-sm-10">
       <form:input type="text" class="form-control" path="jobDescription" placeholder="Enter job description."/>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group-row">
     <form:label class="control-label col-sm-2" path="classification">Classification:</form:label>
     <div class="col-sm-10">
       <form:input type="text" class="form-control" path="classification" placeholder="Enter classification."/>
     </div>
   </div>
 
-  <div class="form-group"> 
+  <div class="form-group-row"> 
     <div class="col-sm-offset-2 col-sm-10">
       <button type="submit" href="createJobPosting" class="btn btn-default">Submit</button>
     </div>
   </div>
 </form:form>
+</div>
+</div>
+</div>
 
-Delete/Archive Posting
 
 
 

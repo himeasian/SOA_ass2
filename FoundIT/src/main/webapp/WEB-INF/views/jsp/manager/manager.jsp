@@ -6,15 +6,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>managerdashboard</title>
 <body>
-
-<div class="container" >
-  <h2>All Job Postings</h2>  
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">All Job Postings</div>
+      <div class="panel-body">
+<div class="container">
   <c:if test="${not empty errmsg}">
 	<div class="row">
 		<header style="color: red;"><h6>${errmsg}</h6></header>
 	</div>
-  </c:if>         
+  </c:if> 
+  </div>        
   <table class="table" id="maintable">
+  
     <thead>
       <tr>
         <!-- <th>_JobID</th>
@@ -37,14 +41,17 @@
 				<td>${row.location}</td>
 				<td>${row.jobDescription}</td>
 				<td>${row.status}</td>
-				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._jobID}">Link</td>
+				<td><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._jobID}">Link</td>
 			</tr>
 		</c:forEach>
       
     </tbody>
+    
   </table>
-</div>
 
+</div>
+</div>
+</div>
 
 </body>
 </html>

@@ -1,6 +1,10 @@
 <%@include file="../default/nav.jsp" %>
 
 <body>
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">Create Reviewer Account</div>
+      <div class="panel-body">
 <c:if test="${not empty errmsg}">
 	<div class="row">
 		<header style="color: red;"><h6>${errmsg}</h6></header>
@@ -47,6 +51,9 @@
     </div>
   </div>
 </form:form>
+</div>
+</div>
+</div>
 
 </body>
 </html>

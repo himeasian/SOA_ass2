@@ -23,6 +23,7 @@
 						</a></li>
 					</c:when>
 					<c:when test="${user.role == 'manager'}">
+						<li><a href="${pageContext.servletContext.contextPath}/manager">Home</a></li>
 						<li><a href="${pageContext.servletContext.contextPath}/manager/jobposting">JobPostings</a></li>
 						<li><a href="${pageContext.servletContext.contextPath}/manager/application">Applications</a></li>
 						<li><a href="${pageContext.servletContext.contextPath}/manager/review">Reviews</a></li>

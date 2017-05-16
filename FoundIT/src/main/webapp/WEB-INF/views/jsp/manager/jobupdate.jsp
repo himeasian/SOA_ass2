@@ -3,7 +3,10 @@
     pageEncoding="UTF-8"%>
 
 <body>
-<c:out value='${JobPosting._jobID}'/>
+<div class="container">
+<div class="panel panel-info">
+      <div class="panel-heading">Updating Job: ${JobPosting._jobID}</div>
+      <div class="panel-body">
 <form:form id="updateJobPostingForm" modelAttribute="JobPosting" action="${pageContext.servletContext.contextPath}/manager/updateJobPosting/${JobPosting._jobID}" class="form-horizontal">
   <!-- <div class="form-group">
     <label for="_jobID" class="control-label col-sm-2" >Job ID:</label>
@@ -62,5 +65,9 @@
     </div>
   </div>
 </form:form>
+</div>
+</div>
+</div>
+
 </body>
 </html>
