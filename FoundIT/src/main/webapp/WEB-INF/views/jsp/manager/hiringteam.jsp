@@ -19,13 +19,13 @@
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="email1">Member 1 Email:</form:label>
     <div class="col-sm-10">
-      <form:input type="text" class="form-control" path="email1" placeholder="Enter email of hiring member 1."/>
+      <form:input type="email" class="form-control" path="email1" placeholder="Enter email of hiring member 1."/>
     </div>
   </div>
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="email2">Member 2:</form:label>
     <div class="col-sm-10"> 
-      <form:input type="text" class="form-control" path="email2" placeholder="Enter email of hiring member 2."/>
+      <form:input type="email" class="form-control" path="email2" placeholder="Enter email of hiring member 2."/>
     </div>
   </div>
   <div class="form-group"> 

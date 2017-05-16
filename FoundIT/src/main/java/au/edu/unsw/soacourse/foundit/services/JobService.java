@@ -241,9 +241,23 @@ public class JobService {
 		return results;
 	}
 	
-	public void createReview(int appid, String email){
+	public void createReview(Review review){
 		jobClient.reset();
-		jobClient.path("/application/review").accept(MediaType.APPLICATION_JSON);
+		jobClient.path("/jobs/application/review").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
+		
+		Review rev = new Review();
+		rev.set_appID(review.get_appID());
+		rev.setReviewerDetails(review.getReviewerDetails());
+		
+		String jsonString = "{}";	
+		try {
+			jsonString = new ObjectMapper().writeValueAsString(rev);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		jobClient.post(jsonString);
+		
 	}
 	
 	public Review getReview(int appid, int reviewid) {

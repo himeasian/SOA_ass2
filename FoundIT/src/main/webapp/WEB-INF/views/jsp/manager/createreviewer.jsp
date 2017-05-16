@@ -22,20 +22,20 @@
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="email">Email:</form:label>
     <div class="col-sm-10"> 
-      <form:input type="text" class="form-control" path="email" placeholder="Enter email"/>
+      <form:input type="email" class="form-control" path="email" placeholder="Enter email"/>
     </div>
   </div>
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="password">Password:</form:label>
     <div class="col-sm-10"> 
-      <form:input type="text" class="form-control" path="password" placeholder="Enter password."/>
+      <form:input type="password" class="form-control" path="password" placeholder="Enter password."/>
     </div>
   </div>
   
   <div class="form-group">
     <form:label class="control-label col-sm-2" path="confirmPassword">Confirm Password:</form:label>
     <div class="col-sm-10"> 
-      <form:input type="text" class="form-control" path="confirmPassword" placeholder="Enter password again to Confirm."/>
+      <form:input type="password" class="form-control" path="confirmPassword" placeholder="Enter password again to Confirm."/>
     </div>
   </div>
   

@@ -243,9 +243,15 @@ public class ManagerController {
 		List<Application> la = new ArrayList<Application>();
 		la=js.getApplicationPerJob(jobID);
 		for(Application app:la){
-			app.get_appID();
-			js.createReview(app.get_jobID(),email1);
-			js.createReview(app.get_jobID(),email2);
+			int currentapp=app.get_appID();
+			Review rev1 = new Review();
+			Review rev2 = new Review();
+			rev1.set_appID(currentapp);
+			rev1.setReviewerDetails(email1);
+			rev2.set_appID(currentapp);
+			rev2.setReviewerDetails(email2);
+			js.createReview(rev1);
+			js.createReview(rev2);
 		}
 		msg="Hiring team succesfully created!";
 		return hiringTeamAction(jobID).addObject("errmsg", msg);
