@@ -17,7 +17,7 @@
 					<c:when test="${user.role == 'applicant'}">
 						<li><a href="${pageContext.servletContext.contextPath}/applicant">Home</a></li>
 						<li><a href="${pageContext.servletContext.contextPath}/applicant/notifications">Notifications 
-							<c:if test="${not empty numNotifs}">
+							<c:if test="${not empty numNotifs and numNotifs > 0}">
 								<span class="badge">${numNotifs}</span>
 							</c:if>
 						</a></li>

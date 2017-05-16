@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import au.edu.unsw.soacourse.foundit.bean.JobApplication;
-import au.edu.unsw.soacourse.foundit.model.Application;
+import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
 import au.edu.unsw.soacourse.foundit.model.User;
+import au.edu.unsw.soacourse.foundit.services.ApplicationComparator;
 import au.edu.unsw.soacourse.foundit.services.JobService;
 
 /**
@@ -49,11 +49,8 @@ public class ApplicantController {
 		salary.put(150000, "$150K");
 		ModelAndView mv = new ModelAndView("applicant/applicant", "jobSearch", new JobPosting());
 		mv.addObject("salaryList", salary);
-		mv.addObject("numNotifs", 4);
 		mv.addObject("currentApplications",
 				new JobService().getCurrentApplications(((User) request.getSession().getAttribute("user")).getEmail()));
-		String errmsg = (String) request.getAttribute("errmsg");
-		if (errmsg != null) mv.addObject("errmsg", errmsg);
 		return mv;
 	}
 
@@ -66,8 +63,9 @@ public class ApplicantController {
 	}
 
 	@RequestMapping("/notifications")
-	public ModelAndView viewNotifications() {
-		return new ModelAndView("applicant/notification");
+	public ModelAndView viewNotifications(HttpServletRequest request) {
+		User u = (User) request.getSession().getAttribute("user");
+		return new ModelAndView("applicant/notification", "notifications", new DatabaseHandler().getNotifications(u.getEmail()));
 	}
 
 	@RequestMapping("/job/{id}")
@@ -106,6 +104,8 @@ public class ApplicantController {
 		}
 		ja.setPhoneNo(n);		
 		mv.addObject("jobApplication", ja);
+		if (ApplicationComparator.APP_LIST.indexOf(ja.getStatus()) > 1)
+			mv.addObject("delete", true);
 		return mv;
 	}
 
@@ -129,6 +129,26 @@ public class ApplicantController {
 
 	@RequestMapping(value = "/job/{jid}/application/{aid}", method = RequestMethod.POST)
 	public ModelAndView updateApplication(@ModelAttribute("jobApplication") JobApplication ja, BindingResult result,
+			@PathVariable("jid") Integer jid, @PathVariable("aid") Integer aid, HttpServletRequest request) {
+		if (result.hasErrors())
+			return new ModelAndView("errors");
+		
+		User u = (User) request.getSession().getAttribute("user");
+		String details = "";
+		if (ja.getPhoneNo() == 0)
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname();
+		else
+			details = u.getEmail() + "," + u.getFname() + "," + u.getLname() + "," + ja.getPhoneNo();
+		ja.setCandidatesDetails(details);
+		ja.set_jobID(jid);
+		ja.set_appID(aid);
+		
+		new JobService().updateApplication(ja);
+		return new ModelAndView("redirect:/applicant/job/" + jid + "/application/" + aid);
+	}
+	
+	@RequestMapping(value = "/job/{jid}/application/{aid}/delete", method = RequestMethod.POST)
+	public ModelAndView deleteApplication(@ModelAttribute("jobApplication") JobApplication ja, BindingResult result,
 			@PathVariable("jid") Integer jid, @PathVariable("aid") Integer aid, HttpServletRequest request) {
 		if (result.hasErrors())
 			return new ModelAndView("errors");

@@ -11,6 +11,7 @@ import java.util.List;
 
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.model.User;
+import au.edu.unsw.soacourse.foundit.model.Notification;
 import au.edu.unsw.soacourse.foundit.model.Poll;
 
 /**
@@ -27,6 +28,97 @@ public class DatabaseHandler {
 	 */
 	public DatabaseHandler() {
 		createDb();
+	}
+	
+	/**
+	 * get users notifications
+	 * @param email
+	 * @return
+	 */
+	public List<Notification> getNotifications(String email) {
+		try (Connection c = connect()) {
+			
+			ResultSet rs = c.createStatement().executeQuery("select count(*) from notifications where email = '"+email+"';");
+			
+			List<Notification> notifs = new ArrayList<>();
+			while(rs.next()) {
+				Notification n = new Notification();
+				n.set_nid(rs.getInt("_nid"));
+				n.setEmail(rs.getString("email"));
+				n.setMessage(rs.getString("message"));
+				n.setFrom(rs.getString("from"));
+			}
+			
+			return notifs;
+			
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * get number of notifications on user
+	 * @param email
+	 * @return
+	 */
+	public int getNumNotifications(String email) {
+		try (Connection c = connect()) {
+			
+			return c.createStatement().executeQuery("select count(*) from notifications where email = '"+email+"';").getInt(1);
+			
+		} catch (SQLException e) {
+			return -1;
+		}
+	}
+	
+	/**
+	 * insert an reviewer allocation into the allocations table
+	 * @param email
+	 * @param jid
+	 * @return
+	 */
+	public int insertAllocation(String email, int jid) {
+		try (Connection c = connect()) {
+			String sql = "insert into allocations(email, _jid) values(?, ?);";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, email);
+			pstmt.setInt(2, jid);
+			pstmt.executeUpdate();
+			return c.createStatement().executeQuery("select last_insert_rowid();").getInt(1);
+			
+		} catch (SQLException e) {
+			return -1;
+		}
+	}
+	
+	/**
+	 * Get all jobs allocations referencing the email
+	 * @param email
+	 * @return
+	 */
+	public List<Integer> getAllocations(String email) {
+		try (Connection c = connect()) {
+			
+			ResultSet r1 = c.createStatement().executeQuery("select * from allocations;");
+			while (r1.next()) {
+				System.out.println(r1.getInt(1) + r1.getString(2) + r1.getString(3));
+			}
+			
+			
+			String sql = "select _jid from allocations where email = ?;";
+			PreparedStatement pstmt = c.prepareStatement(sql);
+			pstmt.setString(1, email);
+			ResultSet rs = pstmt.executeQuery();
+			
+			List<Integer> jobs = new ArrayList<>();
+			while (rs.next()) {
+				jobs.add(rs.getInt(1));
+			}
+			return jobs;
+			
+		} catch (SQLException e) {
+			return null;
+		}
 	}
 	
 	/**
@@ -147,6 +239,7 @@ public class DatabaseHandler {
 			stmt.execute(CREATE_USERS_TABLE);
 			stmt.execute(CREATE_NOTIFICATION_TABLE);
 			stmt.execute(CREATE_POLLS_TABLE);
+			stmt.execute(CREATE_ALLOC_TABLE);
 
 		} catch (SQLException e) { // add a fault here
 			System.err.println(e.getMessage());
@@ -173,14 +266,21 @@ public class DatabaseHandler {
 	private static final String USERS_TABLE = "Users";
 	private static final String NOTIFICATION_TABLE = "Notifications";
 	private static final String POLL_TABLE = "Polls";
+	private static final String JOB_ALLOC_TABLE = "Allocations";
 
 	private static final String CREATE_USERS_TABLE = "create table if not exists " + USERS_TABLE + " ("
 			+ "_uid integer primary key," + "fname text not null," + "lname text not null,"
 			+ "email text not null unique," + "password text not null," + "role text not null," + "company text" + ");";
 
 	private static final String CREATE_NOTIFICATION_TABLE = "create table if not exists " + NOTIFICATION_TABLE + " ("
-			+ "_nid integer primary key," + "email references Users(email)," + "message text not null);";
+			+ "_nid integer primary key," + "email references Users(email)," + "message text not null, from text not null);";
+	
 	private static final String CREATE_POLLS_TABLE = "create table if not exists " + POLL_TABLE + " ("
 			+ "_interviewid integer primary key," + "candidateDetails text not null," + "_pid integer not null);";
+	
+	private static final String CREATE_ALLOC_TABLE = "create table if not exists " + JOB_ALLOC_TABLE + " ("
+													+ "_aid integer primary key,"
+													+ "email references Users(email),"
+													+ "_jid integer);";
 	
 }

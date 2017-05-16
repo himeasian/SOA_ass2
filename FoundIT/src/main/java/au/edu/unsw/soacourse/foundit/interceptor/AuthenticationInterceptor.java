@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
 import au.edu.unsw.soacourse.foundit.model.User;
 
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
@@ -31,6 +32,10 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 			if (!uril[2].equals(role)) {
 				request.setAttribute("authmsg", "You do not have access to this page!");
 				request.getRequestDispatcher(role).forward(request, response);
+			}
+			
+			if (role.equals("applicant")) {
+				request.setAttribute("numNotifs", new DatabaseHandler().getNumNotifications(u.getEmail()));
 			}
 		}
 		return true;

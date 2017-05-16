@@ -62,11 +62,22 @@
 									placeholder="Use this space to add any additional documents" value="${jobApplication.attachment1}"/>
 							</div>
 						</div>
-						<div class="form-group row">
-							<div class="col-sm-2 col-sm-offset-10">
-								<button type="submit" class="btn btn-default pull-right">Update</button>
+						<c:if test="${empty delete}">
+							<div class="form-group row">
+								<div class="col-sm-2 col-sm-offset-10">
+									<button type="submit" class="btn btn-default pull-right">Update</button>
+								</div>
 							</div>
-						</div>
+						</c:if>
+						<c:if test="${not empty delete}">
+							<form action="${pageContext.servletContext.contextPath}/applicant/job/${jobPosting._jobID}/application/${jobApplication._appID}/delete" method="post">
+								<div class="form-group row">
+									<div class="col-sm-2 col-sm-offset-10">
+										<button type="submit" class="btn btn-default pull-right">Delete</button>
+									</div>
+								</div>
+							</form>
+						</c:if>
 					</div>
 				</div>
 			</div>

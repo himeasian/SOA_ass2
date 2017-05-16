@@ -277,7 +277,13 @@ public class ManagerController {
 			msg = "Can't assign either or both emails as reviewers for this job";
 			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
-
+		
+//		// allocate reviewers accordingly
+//		int a = db.insertAllocation(email1, jobID);
+//		int b = db.insertAllocation(email2, jobID);
+//		if (a< 1 || b < 1) {
+//			System.out.println("HELP " + a + " " + b);
+//		}
 		JobService js = new JobService();
 		List<Application> la = new ArrayList<Application>();
 		la = js.getApplicationPerJob(jobID);
