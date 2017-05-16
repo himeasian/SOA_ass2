@@ -12,6 +12,7 @@ import au.edu.unsw.soacourse.foundit.model.User;
 
 /**
  * Database handler specific for foundit app
+ * 
  * @author trungisme
  *
  */
@@ -94,6 +95,7 @@ public class DatabaseHandler {
 		try (Connection c = connect()) {
 			Statement stmt = c.createStatement();
 			stmt.execute(CREATE_USERS_TABLE);
+			stmt.execute(CREATE_NOTIFICATION_TABLE);
 
 		} catch (SQLException e) { // add a fault here
 			System.err.println(e.getMessage());
@@ -118,8 +120,12 @@ public class DatabaseHandler {
 
 	private static final String URL = "jdbc:sqlite:poll.db";
 	private static final String USERS_TABLE = "Users";
+	private static final String NOTIFICATION_TABLE = "Notifications";
 
 	private static final String CREATE_USERS_TABLE = "create table if not exists " + USERS_TABLE + " ("
-			+ "_uid integer primary key," + "fname text not null," + "lname text not null," + "email text not null,"
-			+ "password text not null," + "role text not null," + "company text" + ");";
+			+ "_uid integer primary key," + "fname text not null," + "lname text not null,"
+			+ "email text not null unique," + "password text not null," + "role text not null," + "company text" + ");";
+
+	private static final String CREATE_NOTIFICATION_TABLE = "create table if not exists " + NOTIFICATION_TABLE + " ("
+			+ "_nid integer primary key," + "email references Users(email)," + "message text not null);";
 }

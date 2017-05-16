@@ -1,15 +1,13 @@
 package au.edu.unsw.soacourse.foundit.controller;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -25,88 +23,84 @@ import org.springframework.web.servlet.ModelAndView;
 import au.edu.unsw.soacourse.foundit.bean.Register;
 import au.edu.unsw.soacourse.foundit.database.DatabaseHandler;
 import au.edu.unsw.soacourse.foundit.model.Application;
+import au.edu.unsw.soacourse.foundit.model.HiringTeam;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
 import au.edu.unsw.soacourse.foundit.model.Review;
 import au.edu.unsw.soacourse.foundit.model.User;
-import au.edu.unsw.soacourse.foundit.model.HiringTeam;
 import au.edu.unsw.soacourse.foundit.services.JobService;
 
 /**
  * Manager specific controller
+ * 
  * @author gtkm
  *
  */
 @Controller
 @RequestMapping("manager")
 public class ManagerController {
-	
+
 	@RequestMapping("")
 	public ModelAndView jobsList(HttpSession session) {
 
-		//ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		//HttpSession session = attr.getRequest().getSession();
+		// ServletRequestAttributes attr = (ServletRequestAttributes)
+		// RequestContextHolder.currentRequestAttributes();
+		// HttpSession session = attr.getRequest().getSession();
 		User u = new User();
-		u= (User) session.getAttribute("user");
+		u = (User) session.getAttribute("user");
 		String email = u.getEmail();
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
-		/*JobPosting jp = new JobPosting();
-		jp.set_jobID(24);
-		//jp.setCompanyName("Microsoft");
-		//jp.setSalaryRate(100000);
-		jp.setLocation("Sydney");
-		jp.setPositionType("Student");
-		jp.setStatus("Created");
-		jplist.add(jp);
-		*/
-		
+		/*
+		 * JobPosting jp = new JobPosting(); jp.set_jobID(24);
+		 * //jp.setCompanyName("Microsoft"); //jp.setSalaryRate(100000);
+		 * jp.setLocation("Sydney"); jp.setPositionType("Student");
+		 * jp.setStatus("Created"); jplist.add(jp);
+		 */
+
 		DatabaseHandler db = new DatabaseHandler();
 		User main = db.getUser(email);
 		String companyname = main.getCompany();
 		JobService js = new JobService();
-		jplist=js.getAllJobPosts(companyname);
-		
+		jplist = js.getAllJobPosts(companyname);
+
 		return new ModelAndView("manager/manager", "jobpostings", jplist);
-		
+
 	}
-	
+
 	@RequestMapping("/application")
 	public ModelAndView applicationsList(HttpSession session) {
 		List<Application> applist = new ArrayList<Application>();
 		List<Application> filteredapplist = new ArrayList<Application>();
 		List<JobPosting> jplist = new ArrayList<JobPosting>();
 		User u = new User();
-		u= (User) session.getAttribute("user");
+		u = (User) session.getAttribute("user");
 		String email = u.getEmail();
-		
-		/*Application app = new Application();
-		app.set_jobID(24);
-		//jp.setCompanyName("Microsoft");
-		//jp.setSalaryRate(100000);
-		app.set_appID(10);
-		app.setCandidatesDetails("Bob The Builder");
-		app.setCoverLetter("Heres my letter");
-		app.setAttachment1("1");
-		app.setAttachment2("2");
-		app.setStatus("Considered");
-		applist.add(app);*/
-		
+
+		/*
+		 * Application app = new Application(); app.set_jobID(24);
+		 * //jp.setCompanyName("Microsoft"); //jp.setSalaryRate(100000);
+		 * app.set_appID(10); app.setCandidatesDetails("Bob The Builder");
+		 * app.setCoverLetter("Heres my letter"); app.setAttachment1("1");
+		 * app.setAttachment2("2"); app.setStatus("Considered");
+		 * applist.add(app);
+		 */
+
 		DatabaseHandler db = new DatabaseHandler();
 		User main = db.getUser(email);
 		String companyname = main.getCompany();
 		JobService js = new JobService();
-		jplist=js.getAllJobPosts(companyname);
-		applist=js.getAllApplications();
-		
-		for(Application app:applist){
-			for(JobPosting job:jplist){
-				if(app.get_jobID()==job.get_jobID()){
+		jplist = js.getAllJobPosts(companyname);
+		applist = js.getAllApplications();
+
+		for (Application app : applist) {
+			for (JobPosting job : jplist) {
+				if (app.get_jobID() == job.get_jobID()) {
 					filteredapplist.add(app);
 				}
 			}
 		}
 		return new ModelAndView("manager/application", "applications", filteredapplist);
 	}
-	
+
 	@RequestMapping("/review")
 	public ModelAndView reviewsList(HttpSession session) {
 		List<Application> applist = new ArrayList<Application>();
@@ -115,115 +109,113 @@ public class ManagerController {
 		List<Review> revlist = new ArrayList<Review>();
 		List<Review> filteredrevlist = new ArrayList<Review>();
 		User u = new User();
-		u= (User) session.getAttribute("user");
+		u = (User) session.getAttribute("user");
 		String email = u.getEmail();
-		
-		
+
 		JobService js = new JobService();
-		/*Review rev = new Review();
-		rev.set_reviewID(222);
-		//jp.setCompanyName("Microsoft");
-		//jp.setSalaryRate(100000);
-		rev.set_appID(10);
-		rev.setComments("Could be better");
-		rev.setDecision("Offer made");
-		rev.setReviewerDetails("Bob");
-		revlist.add(rev);*/
+		/*
+		 * Review rev = new Review(); rev.set_reviewID(222);
+		 * //jp.setCompanyName("Microsoft"); //jp.setSalaryRate(100000);
+		 * rev.set_appID(10); rev.setComments("Could be better");
+		 * rev.setDecision("Offer made"); rev.setReviewerDetails("Bob");
+		 * revlist.add(rev);
+		 */
 		DatabaseHandler db = new DatabaseHandler();
 		User main = db.getUser(email);
 		String companyname = main.getCompany();
-		jplist=js.getAllJobPosts(companyname);
-		applist=js.getAllApplications();
-		
-		for(Application app:applist){
-			for(JobPosting job:jplist){
-				if(app.get_jobID()==job.get_jobID()){
+		jplist = js.getAllJobPosts(companyname);
+		applist = js.getAllApplications();
+
+		for (Application app : applist) {
+			for (JobPosting job : jplist) {
+				if (app.get_jobID() == job.get_jobID()) {
 					filteredapplist.add(app);
 				}
 			}
 		}
-		
+
 		revlist = js.getAllReviews();
-		for(Review rev:revlist){
-			for(Application app:filteredapplist){
-				if(app.get_appID()==rev.get_appID()){
+		for (Review rev : revlist) {
+			for (Application app : filteredapplist) {
+				if (app.get_appID() == rev.get_appID()) {
 					filteredrevlist.add(rev);
 				}
 			}
 		}
-		
+
 		return new ModelAndView("manager/review", "reviews", filteredrevlist);
 	}
-	
-	@RequestMapping("/detailedjob/{jobID}") 
-	public ModelAndView detailedJobPosting(@PathVariable("jobID") int jobID){
+
+	@RequestMapping("/detailedjob/{jobID}")
+	public ModelAndView detailedJobPosting(@PathVariable("jobID") int jobID) {
 		JobPosting jp = new JobPosting();
 		jp.set_jobID(jobID);
-		
+
 		JobService js = new JobService();
-		jp=js.getJobPost(jobID);
-		
+		jp = js.getJobPost(jobID);
+
 		return new ModelAndView("manager/detailedjob", "jobposting", jp);
 	}
-	
+
 	@RequestMapping("/jobposting")
 	public ModelAndView jobPostingAction() {
 		return new ModelAndView("manager/jobposting", "JobPosting", new JobPosting());
 	}
-	
+
 	@RequestMapping("/jobupdate")
-	public ModelAndView jobUpdateAction(@RequestParam(value="jobupdatebutton") int jobID) {
+	public ModelAndView jobUpdateAction(@RequestParam(value = "jobupdatebutton") int jobID) {
 		JobPosting jp = new JobPosting();
 		jp.set_jobID(jobID);
 		JobService js = new JobService();
 		jp = js.getJobPost(jobID);
-		
+
 		return new ModelAndView("manager/jobupdate", "JobPosting", jp);
 	}
-	
+
 	@RequestMapping("/jobarchive")
-	public ModelAndView jobArchiveAction(@RequestParam(value="jobarchivebutton") int jobID) {
+	public ModelAndView jobArchiveAction(@RequestParam(value = "jobarchivebutton") int jobID) {
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
 		JobPosting jp = new JobPosting();
 		jp.set_jobID(jobID);
 		JobService js = new JobService();
 		js.archiveJobPost(jobID);
-		String msg = "Delete of "+jobID + " has been successful!";
+		String msg = "Delete of " + jobID + " has been successful!";
 		return jobsList(session).addObject("errmsg", msg);
 	}
-	
+
 	@RequestMapping("/createJobPosting")
-	public ModelAndView createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp, BindingResult result){
+	public ModelAndView createJobPostingAction(@ModelAttribute("JobPosting") JobPosting jp, BindingResult result) {
 		String msg = "";
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
-		
-		if (result.hasErrors()){
-			msg="Job Posting not created!";
-			return jobsList(session).addObject("errmsg", msg);	
+
+		if (result.hasErrors()) {
+			msg = "Job Posting not created!";
+			return jobsList(session).addObject("errmsg", msg);
 		}
-		
+
 		JobService js = new JobService();
 		js.createJobPosting(jp);
-		msg="Job Posting created!";
-		
-		return jobsList(session).addObject("errmsg", msg);	
+		msg = "Job Posting created!";
+
+		return jobsList(session).addObject("errmsg", msg);
 	}
-	
+
 	@RequestMapping("/updateJobPosting/{jobid}")
-	public ModelAndView updatejobPostingAction(@ModelAttribute("JobPosting") JobPosting jp, @PathVariable("jobid") int jobID){
+	public ModelAndView updatejobPostingAction(@ModelAttribute("JobPosting") JobPosting jp,
+			@PathVariable("jobid") int jobID) {
 		String msg = "Job Post Updated!";
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
 		jp.set_jobID(jobID);
 		JobService js = new JobService();
 		js.updateJobPosting(jp);
-		return jobsList(session).addObject("errmsg", msg);	
+		return jobsList(session).addObject("errmsg", msg);
 	}
-	
-	@RequestMapping("/{jobID}/detailedapplication/{appID}") 
-	public ModelAndView detailedApplication(@PathVariable("appID") int appID,@PathVariable("jobID") int jobID){
+
+	@RequestMapping("/{jobID}/detailedapplication/{appID}")
+	public ModelAndView detailedApplication(@PathVariable("appID") int appID, @PathVariable("jobID") int jobID) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Application app = new Application();
 		app.set_appID(appID);
@@ -237,54 +229,54 @@ public class ManagerController {
 		model.put("reviewer2", rev2);
 		return new ModelAndView("manager/detailedapplication", "model", model);
 	}
-	@RequestMapping("/{appID}/detailedreview/{reviewID}") 
-	public ModelAndView detailedReview(@PathVariable("reviewID") int reviewID,@PathVariable("appID") int appID){
+
+	@RequestMapping("/{appID}/detailedreview/{reviewID}")
+	public ModelAndView detailedReview(@PathVariable("reviewID") int reviewID, @PathVariable("appID") int appID) {
 		Review rev = new Review();
 		JobService js = new JobService();
-		rev=js.getReview(appID, reviewID);
-		
+		rev = js.getReview(appID, reviewID);
+
 		return new ModelAndView("manager/detailedreview", "review", rev);
 	}
-	
+
 	@RequestMapping("/hiringteam")
-	public ModelAndView hiringTeamAction(@RequestParam(value="jobbutton") int jobID) {
+	public ModelAndView hiringTeamAction(@RequestParam(value = "jobbutton") int jobID) {
 		return new ModelAndView("manager/hiringteam", "jobID", jobID).addObject("HiringTeam", new HiringTeam());
 	}
-	
+
 	@RequestMapping("/hiringteam/assign")
-	public ModelAndView assignhiringTeamAction(@ModelAttribute("HiringTeam") HiringTeam ht, @RequestParam(value="assignteam") int jobID) {
-		String msg="";
+	public ModelAndView assignhiringTeamAction(@ModelAttribute("HiringTeam") HiringTeam ht,
+			@RequestParam(value = "assignteam") int jobID) {
+		String msg = "";
 		String email1 = ht.getEmail1();
 		String email2 = ht.getEmail2();
-		
-		if(email1.isEmpty() || email2.isEmpty()){
-			msg="Please fill out both email fields.";
+
+		if (email1.isEmpty() || email2.isEmpty()) {
+			msg = "Please fill out both email fields.";
 			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
 		DatabaseHandler db = new DatabaseHandler();
 		User u1 = db.getUser(email1);
 		User u2 = db.getUser(email2);
-		
-		if(u1==null || u2==null){
-			msg="Please enter two valid reviewer emails";
+
+		if (u1 == null || u2 == null) {
+			msg = "Please enter two valid reviewer emails";
 			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
-		
+
 		String role1 = u1.getRole();
 		String role2 = u2.getRole();
-		
-		if(!role1.equals("Reviewer") || !role2.equals("Reviewer")){
-			msg="Can't assign either or both emails as reviewers for this job";
+
+		if (!role1.equals("Reviewer") || !role2.equals("Reviewer")) {
+			msg = "Can't assign either or both emails as reviewers for this job";
 			return hiringTeamAction(jobID).addObject("errmsg", msg);
 		}
-		
-		
-		
+
 		JobService js = new JobService();
 		List<Application> la = new ArrayList<Application>();
-		la=js.getApplicationPerJob(jobID);
-		for(Application app:la){
-			int currentapp=app.get_appID();
+		la = js.getApplicationPerJob(jobID);
+		for (Application app : la) {
+			int currentapp = app.get_appID();
 			Review rev1 = new Review();
 			Review rev2 = new Review();
 			rev1.set_appID(currentapp);
@@ -294,97 +286,99 @@ public class ManagerController {
 			js.createReview(rev1);
 			js.createReview(rev2);
 		}
-		msg="Hiring team succesfully created!";
+		msg = "Hiring team succesfully created!";
 		return hiringTeamAction(jobID).addObject("errmsg", msg);
 	}
-	
+
 	@RequestMapping("/createreviewer")
-	public ModelAndView createReviewer(){
-		
+	public ModelAndView createReviewer() {
+
 		return new ModelAndView("manager/createreviewer", "register", new Register());
 	}
-	
+
 	@RequestMapping(value = "/revieweraddition", method = RequestMethod.POST)
-	public ModelAndView reviewerAddition(@Validated @ModelAttribute("register") Register usr, BindingResult result){
-		
+	public ModelAndView reviewerAddition(@Validated @ModelAttribute("register") Register usr, BindingResult result) {
+
 		DatabaseHandler db = new DatabaseHandler();
 		usr.setRole("Reviewer");
 		int result2 = db.createUser(usr);
-		String msg ="Reviewer could not be created!";
-		if(!usr.getPassword().equals(usr.getConfirmPassword())){
-			msg="Your passwords do not match!";
+		String msg = "Reviewer could not be created!";
+		if (!usr.getPassword().equals(usr.getConfirmPassword())) {
+			msg = "Your passwords do not match!";
 			return createReviewer().addObject("errmsg", msg);
 		}
-		if(result2>0){
-			msg="Reviewer succesfully created!";
+		if (result2 > 0) {
+			msg = "Reviewer succesfully created!";
 			return createReviewer().addObject("errmsg", msg);
 		}
-		
+
 		return createReviewer().addObject("errmsg", msg);
 	}
-	
+
 	@RequestMapping(value = "/archiving", method = RequestMethod.POST)
-	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp){
+	public ModelAndView archiveJobPosting(@ModelAttribute("JobPosting") JobPosting jp) {
 		// Need to access jobservice and perform delete on jobid
 		int jobid = jp.get_jobID();
 		JobService js = new JobService();
 		js.archiveJobPost(jobid);
-		//get boolean result from jobservice;
-		String msg = "Delete of "+jobid + " has been successful!";
+		// get boolean result from jobservice;
+		String msg = "Delete of " + jobid + " has been successful!";
 		return new ModelAndView("manager/manager", "errmsg", msg);
 	}
-	
+
 	@RequestMapping("/detailedjob/{jobID}/candidateshortlist")
-	public ModelAndView getCandidateShortlist(@PathVariable("jobID") int jobID, HttpSession session){
+	public ModelAndView getCandidateShortlist(@PathVariable("jobID") int jobID, HttpSession session) {
 		List<Application> applist = new ArrayList<Application>();
 		List<Application> filteredapplist = new ArrayList<Application>();
 		List<Review> revlist = new ArrayList<Review>();
 		List<Review> filteredrevlist = new ArrayList<Review>();
 
 		JobService js = new JobService();
-		applist=js.getAllApplications();
-		
-		for(Application app:applist)
-		{
-			if(app.get_jobID()==jobID)
-			{
+		applist = js.getAllApplications();
+
+		for (Application app : applist) {
+			if (app.get_jobID() == jobID) {
 				filteredapplist.add(app);
-			}	
+			}
 		}
-		
+
 		revlist = js.getAllReviews();
-		for(Review rev:revlist)
-		{
-			for(Application app:filteredapplist)
-			{
-				if(app.get_appID()==rev.get_appID()){
+		for (Review rev : revlist) {
+			for (Application app : filteredapplist) {
+				if (app.get_appID() == rev.get_appID()) {
 					filteredrevlist.add(rev);
 				}
 			}
 		}
+//
+//		boolean flag = true;
+//		List<Review> finalrevlist = new ArrayList<Review>();
+//		for (Review rev : filteredrevlist) {
+//			if (rev.getDecision() == null || rev.getDecision() == null) {
+//				flag = false;
+//				String msg = "Shortlisting process not yet complete.";
+//				return new ModelAndView("manager/candidateshortlist", "reviewlist", finalrevlist).addObject("errmsg",
+//						msg);
+//			}
+//		}
+//
+//		if (flag) {
+//			for (Review rev : filteredrevlist) {
+//				if (rev.getDecision().equals("Recommend")) {
+//					finalrevlist.add(rev);
+//				}
+//			}
+//		}
 		
-		boolean flag=true;
-		List<Review> finalrevlist = new ArrayList<Review>();
-		for(Review rev:filteredrevlist)
-		{
-			if(rev.getDecision()==null || rev.getDecision()==null)
-			{
-				flag=false;
-				String msg="Shortlisting process not yet complete.";
-				return new ModelAndView("manager/candidateshortlist", "reviewlist", finalrevlist).addObject("errmsg", msg);
+		Map<Integer, Review> recommended = new HashMap<Integer, Review>();
+		for (Review r : filteredrevlist) {
+			if (r.getDecision().equals("Recommend") && !recommended.containsKey(r.get_appID())) {
+				recommended.put(r.get_appID(), r);
 			}
 		}
 		
-		
-		if(flag){
-			for(Review rev:filteredrevlist){
-				if(rev.getDecision().equals("Recommend")){
-					finalrevlist.add(rev);
-				}
-			}
-		}
-		
-		
-		return new ModelAndView("manager/candidateshortlist", "reviewlist", finalrevlist);
+		List<Review> finalList = new ArrayList<>(recommended.values());
+
+		return new ModelAndView("manager/candidateshortlist", "reviewlist", finalList);
 	}
 }
