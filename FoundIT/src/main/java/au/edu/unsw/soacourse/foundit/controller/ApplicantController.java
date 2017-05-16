@@ -52,6 +52,8 @@ public class ApplicantController {
 		mv.addObject("numNotifs", 4);
 		mv.addObject("currentApplications",
 				new JobService().getCurrentApplications(((User) request.getSession().getAttribute("user")).getEmail()));
+		String errmsg = (String) request.getAttribute("errmsg");
+		if (errmsg != null) mv.addObject("errmsg", errmsg);
 		return mv;
 	}
 
