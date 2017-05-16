@@ -60,6 +60,12 @@
 		    		<button name="jobarchivebutton" value='${jobposting._jobID}' >Archive Job Post</button>
 		    	</form:form>
 		    	</td>
+		    	
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/detailedjob/${jobposting._jobID}/candidateshortlist" method="post">
+		    		<button name="jobarchivebutton" value='${jobposting._jobID}' >Candidate Shortlist</button>
+		    	</form:form>
+		    	</td>
+		    	
 		    </tr>
   	</table>
 </div>
