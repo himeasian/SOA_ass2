@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import au.edu.unsw.soacourse.foundit.bean.JobApplication;
 import au.edu.unsw.soacourse.foundit.model.Application;
 import au.edu.unsw.soacourse.foundit.model.JobPosting;
+import au.edu.unsw.soacourse.foundit.model.Review;
 
 /**
  * Job service helper
@@ -95,6 +97,55 @@ public class JobService {
 		jobClient.post(jsonString);
 	}
 	
+	
+	public void createJobPosting(JobPosting jp) {
+		jobClient.reset();
+		jobClient.path("/jobs").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
+		
+		JobPosting p = new JobPosting();
+		p.setStatus("Created");
+		//p.set_jobID(jp.get_jobID());
+		p.setClassification(jp.getClassification());
+		p.setCompanyName(jp.getCompanyName());
+		p.setJobDescription(jp.getJobDescription());
+		p.setLocation(jp.getLocation());
+		p.setPositionType(jp.getPositionType());
+		p.setSalaryRate(jp.getSalaryRate());
+		
+		String jsonstring= "{}";
+		try{
+			jsonstring = new ObjectMapper().writeValueAsString(p);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		jobClient.post(jsonstring);
+	}
+	
+	public void updateJobPosting(JobPosting jp) {
+		jobClient.reset();
+		jobClient.path("/jobs").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
+		
+		JobPosting p = new JobPosting();
+		p.setStatus(jp.getStatus());
+		p.set_jobID(jp.get_jobID());
+		p.setClassification(jp.getClassification());
+		p.setCompanyName(jp.getCompanyName());
+		p.setJobDescription(jp.getJobDescription());
+		p.setLocation(jp.getLocation());
+		p.setPositionType(jp.getLocation());
+		p.setSalaryRate(jp.getSalaryRate());
+		
+		String jsonstring= "{}";
+		try{
+			jsonstring = new ObjectMapper().writeValueAsString(p);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		jobClient.put(jsonstring);
+	}
+	
 	/**
 	 * Gets list of current user's applications including company name and position type
 	 * for the post they are applying for
@@ -151,6 +202,107 @@ public class JobService {
 		}
 	}
 	
+	public void archiveJobPost(int id) {
+		jobClient.reset();
+		jobClient.path("/jobs/" + id).accept(MediaType.APPLICATION_JSON);
+		jobClient.delete();
+		
+	}
+	
+	public List<JobPosting> getAllJobPosts(String companyname){
+		List<JobPosting> results = new ArrayList<>();
+		jobClient.reset();
+		jobClient.path("/jobs/search").query("companyName", companyname).accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try{
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, JobPosting.class));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
+	public List<Application> getAllApplications(){
+		List<Application> results = new ArrayList<Application>();
+		jobClient.reset();
+		jobClient.path("/jobs/application").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try{
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Application.class));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
+	public Application getApplication(int jobid, int appid) {
+		jobClient.reset();
+		jobClient.path("/jobs/" + jobid + "/application/" + appid).accept(MediaType.APPLICATION_JSON);
+		try {
+			return new ObjectMapper().readValue(jobClient.get(String.class), Application.class);
+		} catch (IOException e) {
+			return null;			
+		}
+	}
+	
+	public List<Application> getApplicationPerJob(int jobid) {
+		List<Application> results = new ArrayList<Application>();
+		jobClient.reset();
+		jobClient.path("/jobs/" + jobid + "/application/").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try {
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Application.class));
+		} catch (IOException e) {
+			e.printStackTrace();			
+		}
+		return results;
+	}
+	
+	public void createReview(Review review){
+		jobClient.reset();
+		jobClient.path("/jobs/application/review").accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON);
+		
+		Review rev = new Review();
+		rev.set_appID(review.get_appID());
+		rev.setReviewerDetails(review.getReviewerDetails());
+		
+		String jsonString = "{}";	
+		try {
+			jsonString = new ObjectMapper().writeValueAsString(rev);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		jobClient.post(jsonString);
+		
+	}
+	
+	public Review getReview(int appid, int reviewid) {
+		jobClient.reset();
+		jobClient.path("/jobs/application/" + appid + "/review/" + reviewid).accept(MediaType.APPLICATION_JSON);
+		try {
+			return new ObjectMapper().readValue(jobClient.get(String.class), Review.class);
+		} catch (IOException e) {
+			return null;			
+		}
+	}
+	
+	public List<Review> getAllReviews(){
+		List<Review> results = new ArrayList<Review>();
+		jobClient.reset();
+		jobClient.path("/jobs/application/review").accept(MediaType.APPLICATION_JSON);
+		String jsonString = jobClient.get(String.class);
+		try{
+			results = new ObjectMapper().readValue(jsonString, TypeFactory.defaultInstance().constructCollectionType(List.class, Review.class));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
 	/**
 	 * Returns a list of job postings based on a search for the applicant to view
 	 * @param j job posting object mapped to search parameters
@@ -198,4 +350,6 @@ public class JobService {
 	public static final String JOB_SERVICE = "http://localhost:8080/JobService";
 	private final static String[] APP_STATUSES = {"Received", "In-Review", "Accept", "Reject", "Interview"};
 	private WebClient jobClient;
+
+	
 }

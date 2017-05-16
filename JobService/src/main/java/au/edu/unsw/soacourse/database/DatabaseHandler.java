@@ -315,7 +315,7 @@ public class DatabaseHandler {
 			List<String> querylist = new ArrayList<String>();
 			String sqlquery = "SELECT * FROM Jobs WHERE ";
 		if(companyName!=null){
-			querylist.add("CompanyName like '%" + companyName +"'%");
+			querylist.add("CompanyName like '%" + companyName +"%'");
 		}
 		if(salaryRate!=0){
 			querylist.add("SalaryRate >= " + salaryRate);
@@ -330,7 +330,7 @@ public class DatabaseHandler {
 			querylist.add("JobDescription like '%" + jobDescription +"%'");
 		}
 		if(status!=null){
-			querylist.add("Status = " + status +"'");
+			querylist.add("Status = '" + status +"'");
 		}
 		if(classification!=null){
 			querylist.add("Classification like '%" + classification +"%'");

@@ -1,7 +1,7 @@
 package au.edu.unsw.soacourse.foundit.model;
 
 public class JobPosting {
-	private int _JobID;
+	private int _jobID;
 	private String CompanyName;
 	private float SalaryRate;
 	private String PositionType;
@@ -11,10 +11,10 @@ public class JobPosting {
 	private String Classification;
 	
 	public int get_jobID() {
-		return _JobID;
+		return _jobID;
 	}
-	public void set_jobID(int _JobID) {
-		this._JobID = _JobID;
+	public void set_jobID(int _jobID) {
+		this._jobID = _jobID;
 	}
 	public String getCompanyName() {
 		return CompanyName;

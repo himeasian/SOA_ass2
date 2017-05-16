@@ -14,7 +14,7 @@
 		<table class="table" id="maintable">
 			<tr>
         		<th>_JobID</th>
-        		<td><c:out value='${jobposting._JobID}'/></td>    
+        		<td><c:out value='${jobposting._jobID}'/></td>    
       		</tr>
       		<tr>
         		<th>Company Name</th>
@@ -43,9 +43,21 @@
 		    <tr>
 		    	
 		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/hiringteam" method="post">
-		    		<button name="jobbutton" value='${jobposting._JobID}' >Add reviewers</button>
+		    		<button name="jobbutton" value='${jobposting._jobID}' >Add reviewers</button>
 		    	</form:form>
 		    	</td>
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/jobupdate" method="post">
+		    		<button name="jobupdatebutton" value='${jobposting._jobID}' >Update Job Post</button>
+		    	</form:form>
+		    	</td>
+		    	
+		    </tr>
+		    <tr>
+		    	<td><form:form action="${pageContext.servletContext.contextPath}/manager/jobarchive" method="post">
+		    		<button name="jobarchivebutton" value='${jobposting._jobID}' >Archive Job Post</button>
+		    	</form:form>
+		    	</td>
+		    </tr>
   	</table>
 </div>
 

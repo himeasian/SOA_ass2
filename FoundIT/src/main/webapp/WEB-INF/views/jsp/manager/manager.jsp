@@ -8,7 +8,12 @@
 <body>
 
 <div class="container" >
-  <h2>All Job Postings</h2>           
+  <h2>All Job Postings</h2>  
+  <c:if test="${not empty errmsg}">
+	<div class="row">
+		<header style="color: red;"><h6>${errmsg}</h6></header>
+	</div>
+  </c:if>         
   <table class="table" id="maintable">
     <thead>
       <tr>
@@ -25,14 +30,14 @@
     <tbody>
 		<c:forEach var="row" items="${jobpostings}">
 			<tr>
-				<!-- <td>${row._JobID}</td>
+				<!-- <td>${row._jobID}</td>
 				 <td>${row.companyName}</td>
 				<td>${row.salaryRate}</td>
 				<td>${row.positionType}</td>-->
 				<td>${row.location}</td>
 				<td>${row.jobDescription}</td>
 				<td>${row.status}</td>
-				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._JobID}">Link</td>
+				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedjob/${row._jobID}">Link</td>
 			</tr>
 		</c:forEach>
       

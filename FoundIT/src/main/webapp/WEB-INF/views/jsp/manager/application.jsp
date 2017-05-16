@@ -34,7 +34,7 @@
 				<td>${row.status}</td>
 				<td>${row.attachment1}</td>
 				<td>${row.attachment2}</td>
-				<td ><a href="${pageContext.servletContext.contextPath}/manager/detailedapplication/${row._appID}">Link</td>
+				<td ><a href="${pageContext.servletContext.contextPath}/manager/${row._jobID}/detailedapplication/${row._appID}">Link</td>
 			</tr>
 		</c:forEach>
       
